@@ -50,20 +50,23 @@ index 36a93a7..c2b52c9 100644
          <exclusion>
            <groupId>com.sun.jersey</groupId>
 diff --git a/hadoop-common-project/hadoop-annotations/pom.xml b/hadoop-common-project/hadoop-annotations/pom.xml
-index 6996ea3..144f7d9 100644
+index 6996ea3..6750191 100644
 --- a/hadoop-common-project/hadoop-annotations/pom.xml
 +++ b/hadoop-common-project/hadoop-annotations/pom.xml
-@@ -48,8 +48,8 @@
+@@ -48,11 +48,8 @@
        </activation>
        <dependencies>
          <dependency>
 -          <groupId>jdk.tools</groupId>
 -          <artifactId>jdk.tools</artifactId>
+-          <version>1.6</version>
+-          <scope>system</scope>
+-          <systemPath>${java.home}/../lib/tools.jar</systemPath>
 +          <groupId>com.sun</groupId>
 +          <artifactId>tools</artifactId>
-           <version>1.6</version>
-           <scope>system</scope>
-           <systemPath>${java.home}/../lib/tools.jar</systemPath>
+         </dependency>
+       </dependencies>
+     </profile>
 diff --git a/hadoop-common-project/hadoop-auth/pom.xml b/hadoop-common-project/hadoop-auth/pom.xml
 index a8642c0..29b4898 100644
 --- a/hadoop-common-project/hadoop-auth/pom.xml
@@ -419,10 +422,10 @@ index 9e318ae..949db05 100644
  /**
   * General servlet which is admin-authorized.
 diff --git a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java
-index 7b5b17e..2e7bf53 100644
+index 7b5b17e..009403b 100644
 --- a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java
 +++ b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java
-@@ -60,27 +60,31 @@
+@@ -60,27 +60,28 @@
  import org.apache.hadoop.security.authorize.AccessControlList;
  import org.apache.hadoop.security.ssl.SSLFactory;
  import org.apache.hadoop.util.ReflectionUtils;
@@ -444,7 +447,6 @@ index 7b5b17e..2e7bf53 100644
 -import org.mortbay.jetty.webapp.WebAppContext;
 -import org.mortbay.thread.QueuedThreadPool;
 -import org.mortbay.util.MultiException;
-+//import org.eclipse.jetty.io.Buffer;
 +import org.eclipse.jetty.server.Handler;
 +import org.eclipse.jetty.http.MimeTypes;
 +import org.eclipse.jetty.server.HttpConfiguration;
@@ -453,8 +455,6 @@ index 7b5b17e..2e7bf53 100644
 +import org.eclipse.jetty.server.ServerConnector;
 +import org.eclipse.jetty.server.handler.ContextHandler;
 +import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-+//import org.eclipse.jetty.server.nio.SelectChannelConnector;
-+//import org.eclipse.jetty.server.ssl.SslSocketConnector;
 +import org.eclipse.jetty.servlet.ServletContextHandler;
 +import org.eclipse.jetty.servlet.DefaultServlet;
 +import org.eclipse.jetty.servlet.FilterHolder;
@@ -472,7 +472,7 @@ index 7b5b17e..2e7bf53 100644
  /**
   * Create a Jetty embedded server to answer http requests. The primary goal
   * is to serve up status information for the server.
-@@ -111,11 +115,12 @@
+@@ -111,11 +112,12 @@
  
    private SSLFactory sslFactory;
    protected final Server webServer;
@@ -488,7 +488,7 @@ index 7b5b17e..2e7bf53 100644
    protected final List<String> filterNames = new ArrayList<String>();
    private static final int MAX_RETRIES = 10;
    static final String STATE_DESCRIPTION_ALIVE = " - alive";
-@@ -126,12 +131,12 @@
+@@ -126,12 +128,12 @@
    /** Same as this(name, bindAddress, port, findPort, null); */
    public HttpServer(String name, String bindAddress, int port, boolean findPort
        ) throws IOException {
@@ -504,7 +504,7 @@ index 7b5b17e..2e7bf53 100644
    }
  
    /**
-@@ -150,7 +155,7 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -150,7 +152,7 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf, String[] pathSpecs) throws IOException {
@@ -513,7 +513,7 @@ index 7b5b17e..2e7bf53 100644
    }
    
    /**
-@@ -164,13 +169,13 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -164,13 +166,13 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf) throws IOException {
@@ -529,7 +529,7 @@ index 7b5b17e..2e7bf53 100644
    }
  
    /**
-@@ -186,8 +191,8 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -186,8 +188,8 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf, AccessControlList adminsAcl, 
@@ -540,7 +540,7 @@ index 7b5b17e..2e7bf53 100644
    }
  
    /**
-@@ -206,11 +211,25 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -206,11 +208,17 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf, AccessControlList adminsAcl, 
@@ -548,14 +548,6 @@ index 7b5b17e..2e7bf53 100644
 -    webServer = new Server();
 +      ServerConnector connector, String[] pathSpecs,
 +      Server server) throws IOException {
-+//    int maxThreads = conf.getInt(HTTP_MAX_THREADS, -1);
-+//    // If HTTP_MAX_THREADS is not configured, QueueThreadPool() will use the
-+//    // default value (currently 250).
-+//    QueuedThreadPool threadPool = maxThreads == -1 ?
-+//        new QueuedThreadPool() : new QueuedThreadPool(maxThreads);
-+//    threadPool.setDaemon(true);
-+//
-+//    webServer = new Server(threadPool);
      this.findPort = findPort;
      this.adminsAcl = adminsAcl;
      
@@ -568,7 +560,7 @@ index 7b5b17e..2e7bf53 100644
      if(connector == null) {
        listenerStartedExternally = false;
        if (HttpConfig.isSecure()) {
-@@ -220,11 +239,18 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -220,11 +228,18 @@ public HttpServer(String name, String bindAddress, int port,
          } catch (GeneralSecurityException ex) {
            throw new IOException(ex);
          }
@@ -592,7 +584,7 @@ index 7b5b17e..2e7bf53 100644
          };
          listener = sslListener;
        } else {
-@@ -239,17 +265,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -239,17 +254,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
      
      webServer.addConnector(listener);
  
@@ -611,7 +603,7 @@ index 7b5b17e..2e7bf53 100644
  
      webAppContext = new WebAppContext();
      webAppContext.setDisplayName(name);
-@@ -258,7 +275,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -258,7 +264,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
      webAppContext.getServletContext().setAttribute(CONF_CONTEXT_ATTRIBUTE, conf);
      webAppContext.getServletContext().setAttribute(ADMINS_ACL, adminsAcl);
      addNoCacheFilter(webAppContext);
@@ -621,7 +613,7 @@ index 7b5b17e..2e7bf53 100644
  
      addDefaultApps(contexts, appDir, conf);
          
-@@ -293,19 +311,38 @@ private void addNoCacheFilter(WebAppContext ctxt) {
+@@ -293,19 +300,30 @@ private void addNoCacheFilter(WebAppContext ctxt) {
     * provided. This wrapper and all subclasses must create at least one
     * listener.
     */
@@ -648,14 +640,6 @@ index 7b5b17e..2e7bf53 100644
 +    conn.setAcceptQueueSize(128);
 +    conn.setIdleTimeout(10000);
 +    return conn;
-+
-+//    SelectChannelConnector ret = new SelectChannelConnector();
-+//    ret.setLowResourceMaxIdleTime(10000);
-+//    ret.setAcceptQueueSize(128);
-+//    ret.setResolveNames(false);
-+//    ret.setUseDirectBuffers(false);
-+//    ret.setRequestHeaderSize(1024*64);
-+//    return ret;
 +  }
 +
 +  @InterfaceAudience.Private
@@ -670,7 +654,7 @@ index 7b5b17e..2e7bf53 100644
    }
  
    /** Get an array of FilterConfiguration specified in the conf */
-@@ -337,14 +374,14 @@ protected void addDefaultApps(ContextHandlerCollection parent,
+@@ -337,14 +355,14 @@ protected void addDefaultApps(ContextHandlerCollection parent,
      // set up the context for "/logs/" if "hadoop.log.dir" property is defined. 
      String logDir = System.getProperty("hadoop.log.dir");
      if (logDir != null) {
@@ -687,7 +671,7 @@ index 7b5b17e..2e7bf53 100644
        }
        logContext.setDisplayName("logs");
        setContextAttributes(logContext, conf);
-@@ -352,7 +389,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
+@@ -352,7 +370,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
        defaultContexts.put(logContext, true);
      }
      // set up the context for "/static/*"
@@ -696,7 +680,7 @@ index 7b5b17e..2e7bf53 100644
      staticContext.setResourceBase(appDir + "/static");
      staticContext.addServlet(DefaultServlet.class, "/*");
      staticContext.setDisplayName("static");
-@@ -360,7 +397,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
+@@ -360,7 +378,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
      defaultContexts.put(staticContext, true);
    }
    
@@ -705,7 +689,7 @@ index 7b5b17e..2e7bf53 100644
      context.getServletContext().setAttribute(CONF_CONTEXT_ATTRIBUTE, conf);
      context.getServletContext().setAttribute(ADMINS_ACL, adminsAcl);
    }
-@@ -377,10 +414,11 @@ protected void addDefaultServlets() {
+@@ -377,10 +395,11 @@ protected void addDefaultServlets() {
      addServlet("conf", "/conf", ConfServlet.class);
    }
  
@@ -719,7 +703,7 @@ index 7b5b17e..2e7bf53 100644
      defaultContexts.put(ctxt, isFiltered);
    }
  
-@@ -481,7 +519,7 @@ public void addInternalServlet(String name, String pathSpec,
+@@ -481,7 +500,7 @@ public void addInternalServlet(String name, String pathSpec,
         FilterMapping fmap = new FilterMapping();
         fmap.setPathSpec(pathSpec);
         fmap.setFilterName(SPNEGO_FILTER);
@@ -728,7 +712,7 @@ index 7b5b17e..2e7bf53 100644
         handler.addFilterMapping(fmap);
      }
    }
-@@ -495,9 +533,9 @@ public void addFilter(String name, String classname,
+@@ -495,9 +514,9 @@ public void addFilter(String name, String classname,
      LOG.info("Added filter " + name + " (class=" + classname
          + ") to context " + webAppContext.getDisplayName());
      final String[] ALL_URLS = { "/*" };
@@ -740,7 +724,7 @@ index 7b5b17e..2e7bf53 100644
          defineFilter(ctx, name, classname, parameters, ALL_URLS);
          LOG.info("Added filter " + name + " (class=" + classname
              + ") to context " + ctx.getDisplayName());
-@@ -511,7 +549,7 @@ public void addGlobalFilter(String name, String classname,
+@@ -511,7 +530,7 @@ public void addGlobalFilter(String name, String classname,
        Map<String, String> parameters) {
      final String[] ALL_URLS = { "/*" };
      defineFilter(webAppContext, name, classname, parameters, ALL_URLS);
@@ -749,7 +733,7 @@ index 7b5b17e..2e7bf53 100644
        defineFilter(ctx, name, classname, parameters, ALL_URLS);
      }
      LOG.info("Added global filter '" + name + "' (class=" + classname + ")");
-@@ -520,16 +558,18 @@ public void addGlobalFilter(String name, String classname,
+@@ -520,16 +539,18 @@ public void addGlobalFilter(String name, String classname,
    /**
     * Define a filter for a context and set up default url mappings.
     */
@@ -771,7 +755,7 @@ index 7b5b17e..2e7bf53 100644
      fmap.setFilterName(name);
      ServletHandler handler = ctx.getServletHandler();
      handler.addFilter(holder, fmap);
-@@ -541,13 +581,13 @@ protected void defineFilter(Context ctx, String name,
+@@ -541,13 +562,13 @@ protected void defineFilter(Context ctx, String name,
     * @param webAppCtx The WebApplicationContext to add to
     */
    protected void addFilterPathMapping(String pathSpec,
@@ -787,7 +771,7 @@ index 7b5b17e..2e7bf53 100644
        handler.addFilterMapping(fmap);
      }
    }
-@@ -581,7 +621,7 @@ protected String getWebAppsPath(String appName) throws FileNotFoundException {
+@@ -581,7 +602,7 @@ protected String getWebAppsPath(String appName) throws FileNotFoundException {
     * @return the port
     */
    public int getPort() {
@@ -796,7 +780,7 @@ index 7b5b17e..2e7bf53 100644
    }
  
    /**
-@@ -607,12 +647,12 @@ public void addSslListener(InetSocketAddress addr, String keystore,
+@@ -607,12 +628,12 @@ public void addSslListener(InetSocketAddress addr, String keystore,
      if (webServer.isStarted()) {
        throw new IOException("Failed to add ssl listener");
      }
@@ -813,7 +797,7 @@ index 7b5b17e..2e7bf53 100644
      webServer.addConnector(sslListener);
    }
  
-@@ -636,14 +676,14 @@ public void addSslListener(InetSocketAddress addr, Configuration sslConf,
+@@ -636,14 +657,14 @@ public void addSslListener(InetSocketAddress addr, Configuration sslConf,
        System.setProperty("javax.net.ssl.trustStoreType", sslConf.get(
            "ssl.server.truststore.type", "jks"));
      }
@@ -834,7 +818,7 @@ index 7b5b17e..2e7bf53 100644
      webServer.addConnector(sslListener);
    }
    
-@@ -1075,10 +1115,10 @@ public void doFilter(ServletRequest request,
+@@ -1075,10 +1096,10 @@ public void doFilter(ServletRequest request,
       */
      private String inferMimeType(ServletRequest request) {
        String path = ((HttpServletRequest)request).getRequestURI();
@@ -1855,10 +1839,10 @@ index 0be46de..b2834b8 100644
      if (conf.getBoolean(DFS_HTTPS_ENABLE_KEY, false)) {
        boolean needClientAuth = conf.getBoolean(DFS_CLIENT_HTTPS_NEED_AUTH_KEY,
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java
-index 0fda306..a1f6d36 100644
+index 0fda306..77c6c82 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java
-@@ -32,14 +32,16 @@
+@@ -32,14 +32,15 @@
  import org.apache.hadoop.http.HttpServer;
  import org.apache.hadoop.security.UserGroupInformation;
  import org.apache.hadoop.security.ssl.SSLFactory;
@@ -1867,7 +1851,6 @@ index 0fda306..a1f6d36 100644
 -import org.mortbay.jetty.security.SslSocketConnector;
 +import org.eclipse.jetty.server.Server;
 +import org.eclipse.jetty.server.ServerConnector;
-+//import org.eclipse.jetty.server.ssl.SslSocketConnector;
 +import org.eclipse.jetty.util.ssl.SslContextFactory;
  
  import javax.net.ssl.SSLServerSocketFactory;
@@ -1878,7 +1861,7 @@ index 0fda306..a1f6d36 100644
  /**
   * Utility class to start a datanode in a secure cluster, first obtaining 
   * privileged resources before main startup and handing them to the datanode.
-@@ -50,17 +52,21 @@
+@@ -50,17 +51,21 @@
     */
    public static class SecureResources {
      private final ServerSocket streamingSocket;
@@ -1903,7 +1886,7 @@ index 0fda306..a1f6d36 100644
    }
    
    private String [] args;
-@@ -94,6 +100,9 @@ public void start() throws Exception {
+@@ -94,6 +99,9 @@ public void start() throws Exception {
    @VisibleForTesting
    public static SecureResources getSecureResources(final SSLFactory sslFactory,
                                    Configuration conf) throws Exception {
@@ -1913,7 +1896,7 @@ index 0fda306..a1f6d36 100644
      // Obtain secure port for data streaming to datanode
      InetSocketAddress streamingAddr  = DataNode.getStreamingAddr(conf);
      int socketWriteTimeout = conf.getInt(DFSConfigKeys.DFS_DATANODE_SOCKET_WRITE_TIMEOUT_KEY,
-@@ -110,22 +119,28 @@ public static SecureResources getSecureResources(final SSLFactory sslFactory,
+@@ -110,22 +118,28 @@ public static SecureResources getSecureResources(final SSLFactory sslFactory,
      }
  
      // Obtain secure listener for web server
@@ -1949,7 +1932,7 @@ index 0fda306..a1f6d36 100644
      }
  
      InetSocketAddress infoSocAddr = DataNode.getInfoAddr(conf);
-@@ -138,7 +153,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -138,7 +152,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
            "context. Needed " + streamingAddr.getPort() + ", got " + ss.getLocalPort());
      }
      System.err.println("Successfully obtained privileged resources (streaming port = "
@@ -1958,7 +1941,7 @@ index 0fda306..a1f6d36 100644
      
      if ((ss.getLocalPort() > 1023 || listener.getPort() > 1023) &&
          UserGroupInformation.isSecurityEnabled()) {
-@@ -146,7 +161,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -146,7 +160,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
      }
      System.err.println("Opened streaming server at " + streamingAddr);
      System.err.println("Opened info server at " + infoSocAddr);
