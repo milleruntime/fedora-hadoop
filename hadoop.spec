@@ -16,7 +16,7 @@
 
 Name:   hadoop
 Version: 2.0.5
-Release: 10%{?dist}
+Release: 11%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -95,6 +95,7 @@ BuildRequires: ecj >= 1:4.2.1-6
 BuildRequires: fuse-devel
 BuildRequires: fusesource-pom
 BuildRequires: geronimo-jms
+BuildRequires: gcc-c++
 BuildRequires: glassfish-jaxb
 BuildRequires: glassfish-jsp
 BuildRequires: glassfish-jsp-api
@@ -130,6 +131,7 @@ BuildRequires: jsr-311
 BuildRequires: junit
 BuildRequires: jzlib
 BuildRequires: log4j
+BuildRequires: make
 BuildRequires: maven
 BuildRequires: maven-antrun-plugin
 BuildRequires: maven-assembly-plugin
@@ -209,14 +211,6 @@ Requires: /usr/sbin/useradd
 # These are required to meet the symlinks for the classpath
 Requires: antlr-tool
 Requires: apache-commons-beanutils
-Requires: apache-commons-cli
-Requires: apache-commons-collections
-Requires: apache-commons-configuration
-Requires: apache-commons-el
-Requires: apache-commons-lang
-Requires: apache-commons-logging
-Requires: apache-commons-math
-Requires: apache-commons-net
 Requires: avalon-framework
 Requires: avalon-logkit
 Requires: checkstyle
@@ -226,28 +220,16 @@ Requires: geronimo-jms
 Requires: glassfish-jaxb
 Requires: glassfish-jsp
 Requires: glassfish-jsp-api
-Requires: guava
-Requires: httpcomponents-client
-Requires: httpcomponents-core
 Requires: istack-commons
-Requires: jackson
 Requires: java-base64
 Requires: java-xmlbuilder
 Requires: javamail
-Requires: jets3t
 Requires: jettison
 Requires: jetty-http
 Requires: jetty-io
 Requires: jetty-security
-Requires: jetty-server
-Requires: jetty-servlet
-Requires: jetty-util
-Requires: jetty-util-ajax
-Requires: jetty-webapp
 Requires: jetty-xml
 Requires: jline
-Requires: jsch
-Requires: jsr-305
 Requires: jsr-311
 Requires: mockito
 Requires: nc6
@@ -257,12 +239,8 @@ Requires: paranamer
 Requires: relaxngDatatype
 Requires: servlet3
 Requires: snappy-java
-Requires: tomcat-servlet-3.0-api
-Requires: tomcat-el-2.2-api
 Requires: txw2
 Requires: which
-Requires: xmlenc
-Requires: zookeeper-java
 
 %description common
 Hadoop is a framework that allows for the distributed processing of large data
@@ -297,9 +275,9 @@ Header files for Hadoop's hdfs library and other utilities
 Summary: The Hadoop Distributed File System
 Group: Applications/System
 BuildArch: noarch
+Requires: apache-commons-daemon-jsvc
 Requires: %{name}-common = %{version}-%{release}
 Requires(pre): %{name}-common = %{version}-%{release}
-Requires: apache-commons-daemon-jsvc
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -316,12 +294,12 @@ used by Hadoop applications.
 %package hdfs-fuse
 Summary: Allows mounting of Hadoop HDFS
 Group: Development/Libraries
-Requires: %{name}-common = %{version}-%{release}
-Requires: libhdfs%{?_isa} = %{version}-%{release}
-Requires: %{name}-hdfs = %{version}-%{release}
-Requires: %{name}-yarn = %{version}-%{release}
-Requires: %{name}-mapreduce = %{version}-%{release}
 Requires: fuse
+Requires: libhdfs%{?_isa} = %{version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-hdfs = %{version}-%{release}
+Requires: %{name}-mapreduce = %{version}-%{release}
+Requires: %{name}-yarn = %{version}-%{release}
 
 %description hdfs-fuse
 Hadoop is a framework that allows for the distributed processing of large data
@@ -423,8 +401,8 @@ Summary: Hadoop test resources
 BuildArch: noarch
 Requires: %{name}-common = %{version}-%{release}
 Requires: %{name}-hdfs = %{version}-%{release}
-Requires: %{name}-yarn = %{version}-%{release}
 Requires: %{name}-mapreduce = %{version}-%{release}
+Requires: %{name}-yarn = %{version}-%{release}
 
 %description tests
 Hadoop is a framework that allows for the distributed processing of large data
@@ -619,6 +597,9 @@ EOL
 }
 
 %mvn_install
+
+# Work around for BZ1015612 (blocks correction of commons-el dep issue)
+sed -i "/<version>1.0<\/version>/d" %{buildroot}/%{_mavendepmapfragdir}/hadoop.xml
 
 install -d -m 0755 %{buildroot}/%{_libdir}/%{name}
 install -d -m 0755 %{buildroot}/%{_includedir}/%{name}
@@ -1099,6 +1080,11 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Hadoop Yarn" --she
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Mon Oct  7 2013 Robert Rati <rrati@redhat> - 2.0.5-11
+- Workaround for BZ1015612
+- Added BuildRequires on gcc-g++ and make
+- Removed duplicated deps from common package
+
 * Thu Oct  3 2013 Robert Rati <rrati@redhat> - 2.0.5-10
 - Added dependency on which
 - Added pom files for test jars
