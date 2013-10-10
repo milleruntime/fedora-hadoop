@@ -14,9 +14,13 @@
 %global yarn_services hadoop-proxyserver.service hadoop-resourcemanager.service hadoop-nodemanager.service
 %global httpfs_services hadoop-httpfs.service
 
+# Filter out undesired provides and requires
+%global __requires_exclude_from ^%{_libdir}/%{name}/.*$
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*$
+
 Name:   hadoop
 Version: 2.0.5
-Release: 11%{?dist}
+Release: 12%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -598,9 +602,6 @@ EOL
 
 %mvn_install
 
-# Work around for BZ1015612 (blocks correction of commons-el dep issue)
-sed -i "/<version>1.0<\/version>/d" %{buildroot}/%{_mavendepmapfragdir}/hadoop.xml
-
 install -d -m 0755 %{buildroot}/%{_libdir}/%{name}
 install -d -m 0755 %{buildroot}/%{_includedir}/%{name}
 install -d -m 0755 %{buildroot}/%{_jnidir}/
@@ -682,10 +683,10 @@ install -pm 644 hadoop-project-dist/pom.xml %{buildroot}/%{_mavenpomdir}/JPP.%{n
 copy_dep_jars %{name}-client/target/%{name}-client-%{hadoop_version}/share/%{name}/client/lib %{buildroot}/%{_datadir}/%{name}/client/lib
 %{_bindir}/xmvn-subst %{buildroot}/%{_datadir}/%{name}/client/lib
 %{__ln_s} %{_jnidir}/%{name}-common.jar %{buildroot}/%{_datadir}/%{name}/client/lib
-%{__ln_s} %{javadir}/%{name}/%{name}-client.jar %{buildroot}/%{_datadir}/%{name}/client
+%{__ln_s} %{_javadir}/%{name}/%{name}-client.jar %{buildroot}/%{_datadir}/%{name}/client
 for f in annotations auth hdfs mapreduce-client-app mapreduce-client-common mapreduce-client-core mapreduce-client-jobclient mapreduce-client-shuffle yarn-api yarn-client yarn-common yarn-server-common
 do
-  %{__ln_s} %{javadir}/%{name}/%{name}-$f.jar %{buildroot}/%{_datadir}/%{name}/client/lib
+  %{__ln_s} %{_javadir}/%{name}/%{name}-$f.jar %{buildroot}/%{_datadir}/%{name}/client/lib
 done
 
 # common jar depenencies
@@ -693,14 +694,14 @@ copy_dep_jars $basedir/share/%{name}/common/lib %{buildroot}/%{_datadir}/%{name}
 %{_bindir}/xmvn-subst %{buildroot}/%{_datadir}/%{name}/common/lib
 for f in annotations auth
 do
-  %{__ln_s} %{javadir}/%{name}/%{name}-$f.jar %{buildroot}/%{_datadir}/%{name}/common/lib
+  %{__ln_s} %{_javadir}/%{name}/%{name}-$f.jar %{buildroot}/%{_datadir}/%{name}/common/lib
 done
 
 # hdfs jar dependencies
 copy_dep_jars $basedir/share/%{name}/hdfs/lib %{buildroot}/%{_datadir}/%{name}/hdfs/lib
 %{_bindir}/xmvn-subst %{buildroot}/%{_datadir}/%{name}/hdfs/lib
-%{__ln_s} %{javadir}/%{name}/%{name}-hdfs.jar %{buildroot}/%{_datadir}/%{name}/hdfs
-%{__ln_s} %{javadir}/%{name}/%{name}-bkjournal.jar %{buildroot}/%{_datadir}/%{name}/hdfs/lib
+%{__ln_s} %{_javadir}/%{name}/%{name}-hdfs.jar %{buildroot}/%{_datadir}/%{name}/hdfs
+%{__ln_s} %{_javadir}/%{name}/%{name}-hdfs-bkjournal.jar %{buildroot}/%{_datadir}/%{name}/hdfs/lib
 
 # httpfs
 %if %{package_httpfs}
@@ -752,23 +753,23 @@ popd
 # mapreduce jar dependencies
 copy_dep_jars $basedir/share/%{name}/mapreduce/lib %{buildroot}/%{_datadir}/%{name}/mapreduce/lib
 %{_bindir}/xmvn-subst %{buildroot}/%{_datadir}/%{name}/mapreduce/lib
-%{__ln_s} %{javadir}/%{name}/%{name}-annotations.jar %{buildroot}/%{_datadir}/%{name}/mapreduce/lib
+%{__ln_s} %{_javadir}/%{name}/%{name}-annotations.jar %{buildroot}/%{_datadir}/%{name}/mapreduce/lib
 for f in app common core jobclient shuffle hs hs-plugins
 do
-  %{__ln_s} %{javadir}/%{name}/%{name}-mapreduce-client-$f.jar %{buildroot}/%{_datadir}/%{name}/mapreduce
+  %{__ln_s} %{_javadir}/%{name}/%{name}-mapreduce-client-$f.jar %{buildroot}/%{_datadir}/%{name}/mapreduce
 done
 for f in archives datajoin distcp extras gridmix rumen streaming
 do
-  %{__ln_s} %{javadir}/%{name}/%{name}-$f.jar %{buildroot}/%{_datadir}/%{name}/mapreduce
+  %{__ln_s} %{_javadir}/%{name}/%{name}-$f.jar %{buildroot}/%{_datadir}/%{name}/mapreduce
 done
 
 # yarn jar dependencies
 copy_dep_jars $basedir/share/%{name}/yarn/lib %{buildroot}/%{_datadir}/%{name}/yarn/lib
 %{_bindir}/xmvn-subst %{buildroot}/%{_datadir}/%{name}/yarn/lib
-%{__ln_s} %{javadir}/%{name}/%{name}-annotations.jar %{buildroot}/%{_datadir}/%{name}/yarn/lib
+%{__ln_s} %{_javadir}/%{name}/%{name}-annotations.jar %{buildroot}/%{_datadir}/%{name}/yarn/lib
 for f in api client common server-common applications-distributedshell applications-unmanaged-am-launcher server-nodemanager server-resourcemanager server-web-proxy site
 do
-  %{__ln_s} %{javadir}/%{name}/%{name}-yarn-$f.jar %{buildroot}/%{_datadir}/%{name}/yarn
+  %{__ln_s} %{_javadir}/%{name}/%{name}-yarn-$f.jar %{buildroot}/%{_datadir}/%{name}/yarn
 done
 
 # Install hdfs webapp bits
@@ -944,6 +945,7 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Hadoop Yarn" --she
 %config(noreplace) %{_sysconfdir}/%{name}/ssl-client.xml.example
 %config(noreplace) %{_sysconfdir}/%{name}/ssl-server.xml.example
 %dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/common
 %{_datadir}/%{name}/common/lib
 %{_libexecdir}/%{name}-config.sh
 %{_libexecdir}/%{name}-layout.sh
@@ -965,6 +967,7 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Hadoop Yarn" --she
 
 %files devel
 %{_includedir}/%{name}
+%{_libdir}/libhdfs.so
 
 %files -f .mfiles-hadoop-hdfs hdfs
 %exclude %{_datadir}/%{name}/client
@@ -1025,7 +1028,7 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Hadoop Yarn" --she
 
 %files -n libhdfs
 %doc hadoop-dist/target/hadoop-%{hadoop_version}/share/doc/hadoop/hdfs/LICENSE.txt
-%{_libdir}/libhdfs*
+%{_libdir}/libhdfs.so.*
 
 %files -f .mfiles-hadoop-mapreduce mapreduce
 %exclude %{_datadir}/%{name}/client
@@ -1080,6 +1083,14 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Hadoop Yarn" --she
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Thu Oct 10 2013 Robert Rati <rrati@redhat> - 2.0.5-12
+- Removed workaround for BZ1015612
+- Filtered libhadoop provides/requires (BZ1017596)
+- Fixed symlink for hdfs-bkjournal
+- Moved libhdfs.so to devel package (BZ1017579)
+- Fixed symlink paths for hadoop jars (BZ1017568)
+- Added ownership of %{_datadir}/%{name}/hadoop/common
+
 * Mon Oct  7 2013 Robert Rati <rrati@redhat> - 2.0.5-11
 - Workaround for BZ1015612
 - Added BuildRequires on gcc-g++ and make
