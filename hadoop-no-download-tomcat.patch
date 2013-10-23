@@ -1,8 +1,8 @@
 diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
-index d83e601..480e2ee 100644
+index 5614d02..a513541 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
 +++ b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
-@@ -515,56 +515,6 @@
+@@ -515,50 +515,6 @@
              <artifactId>maven-antrun-plugin</artifactId>
              <executions>
                <execution>
@@ -22,15 +22,8 @@ index d83e601..480e2ee 100644
 -
 -                    <!-- Using Unix script to preserve file permissions -->
 -                    <echo file="${project.build.directory}/tomcat-untar.sh">
--
--                      which cygpath 2&gt; /dev/null
--                      if [ $? = 1 ]; then
--                      BUILD_DIR="${project.build.directory}"
--                      else
--                      BUILD_DIR=`cygpath --unix '${project.build.directory}'`
--                      fi
--                      cd $BUILD_DIR/tomcat.exp
--                      tar xzf ${basedir}/downloads/apache-tomcat-${tomcat.version}.tar.gz
+-                      cd "${project.build.directory}/tomcat.exp"
+-                      gzip -cd ../../downloads/apache-tomcat-${tomcat.version}.tar.gz | tar xf -
 -                    </echo>
 -                    <exec executable="sh" dir="${project.build.directory}" failonerror="true">
 -                      <arg line="./tomcat-untar.sh"/>
@@ -44,6 +37,7 @@ index d83e601..480e2ee 100644
 -                    <delete file="${httpfs.tomcat.dist.dir}/conf/server.xml"/>
 -                    <copy file="${basedir}/src/main/tomcat/server.xml"
 -                          toDir="${httpfs.tomcat.dist.dir}/conf"/>
+-                    <delete file="${httpfs.tomcat.dist.dir}/conf/logging.properties"/>
 -                    <copy file="${basedir}/src/main/tomcat/logging.properties"
 -                          toDir="${httpfs.tomcat.dist.dir}/conf"/>
 -                    <copy toDir="${httpfs.tomcat.dist.dir}/webapps/ROOT">

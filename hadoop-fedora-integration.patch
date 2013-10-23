@@ -1,10 +1,10 @@
 diff --git a/hadoop-client/pom.xml b/hadoop-client/pom.xml
-index 36a93a7..c2b52c9 100644
+index 26435ca..a179ed4 100644
 --- a/hadoop-client/pom.xml
 +++ b/hadoop-client/pom.xml
-@@ -44,12 +44,8 @@
-           <artifactId>commons-httpclient</artifactId>
-         </exclusion>
+@@ -40,12 +40,8 @@
+       <scope>compile</scope>
+       <exclusions>
          <exclusion>
 -          <groupId>tomcat</groupId>
 -          <artifactId>jasper-compiler</artifactId>
@@ -17,7 +17,7 @@ index 36a93a7..c2b52c9 100644
          </exclusion>
          <exclusion>
            <groupId>javax.servlet</groupId>
-@@ -64,24 +60,20 @@
+@@ -60,24 +56,20 @@
            <artifactId>commons-logging-api</artifactId>
          </exclusion>
          <exclusion>
@@ -50,7 +50,7 @@ index 36a93a7..c2b52c9 100644
          <exclusion>
            <groupId>com.sun.jersey</groupId>
 diff --git a/hadoop-common-project/hadoop-annotations/pom.xml b/hadoop-common-project/hadoop-annotations/pom.xml
-index 6996ea3..6750191 100644
+index ac1e7fe..114c340 100644
 --- a/hadoop-common-project/hadoop-annotations/pom.xml
 +++ b/hadoop-common-project/hadoop-annotations/pom.xml
 @@ -48,11 +48,8 @@
@@ -67,8 +67,22 @@ index 6996ea3..6750191 100644
          </dependency>
        </dependencies>
      </profile>
+@@ -63,11 +60,8 @@
+       </activation>
+       <dependencies>
+         <dependency>
+-          <groupId>jdk.tools</groupId>
+-          <artifactId>jdk.tools</artifactId>
+-          <version>1.7</version>
+-          <scope>system</scope>
+-          <systemPath>${java.home}/../lib/tools.jar</systemPath>
++          <groupId>com.sun</groupId>
++          <artifactId>tools</artifactId>
+         </dependency>
+       </dependencies>
+     </profile>
 diff --git a/hadoop-common-project/hadoop-auth/pom.xml b/hadoop-common-project/hadoop-auth/pom.xml
-index a8642c0..29b4898 100644
+index 8819941..cca9008 100644
 --- a/hadoop-common-project/hadoop-auth/pom.xml
 +++ b/hadoop-common-project/hadoop-auth/pom.xml
 @@ -54,8 +54,9 @@
@@ -147,7 +161,7 @@ index 6059d8c..bba1a00 100644
      System.out.println("Running embedded servlet container at: http://" + host + ":" + port);
    }
 diff --git a/hadoop-common-project/hadoop-common/pom.xml b/hadoop-common-project/hadoop-common/pom.xml
-index 0f453f6..e775d31 100644
+index 89691c6..37e73b5 100644
 --- a/hadoop-common-project/hadoop-common/pom.xml
 +++ b/hadoop-common-project/hadoop-common/pom.xml
 @@ -53,7 +53,7 @@
@@ -159,14 +173,17 @@ index 0f453f6..e775d31 100644
        <scope>compile</scope>
      </dependency>
      <dependency>
-@@ -82,52 +82,79 @@
+@@ -82,20 +82,43 @@
        <scope>compile</scope>
      </dependency>
      <dependency>
--      <groupId>javax.servlet</groupId>
--      <artifactId>servlet-api</artifactId>
 +      <groupId>commons-collections</groupId>
 +      <artifactId>commons-collections</artifactId>
++      <scope>compile</scope>
++    </dependency>
++    <dependency>
+       <groupId>javax.servlet</groupId>
+       <artifactId>servlet-api</artifactId>
        <scope>compile</scope>
      </dependency>
      <dependency>
@@ -203,57 +220,43 @@ index 0f453f6..e775d31 100644
  
      <dependency>
        <groupId>com.sun.jersey</groupId>
-       <artifactId>jersey-core</artifactId>
-+      <version>1.17.1</version>
-       <scope>compile</scope>
-     </dependency>
-     <dependency>
-       <!-- Used, even though 'mvn dependency:analyze' doesn't find it -->
-       <groupId>com.sun.jersey</groupId>
-       <artifactId>jersey-json</artifactId>
-+      <version>1.17.1</version>
-       <scope>compile</scope>
-     </dependency>
-     <dependency>
-       <groupId>com.sun.jersey</groupId>
+@@ -113,21 +136,26 @@
        <artifactId>jersey-server</artifactId>
-+      <version>1.17.1</version>
-+      <scope>compile</scope>
-+    </dependency>
+       <scope>compile</scope>
+     </dependency>
 +    <dependency>
 +      <groupId>com.sun.jersey</groupId>
 +      <artifactId>jersey-servlet</artifactId>
-+      <version>1.17.1</version>
-       <scope>compile</scope>
-     </dependency>
++      <scope>compile</scope>
++    </dependency>
  
      <dependency>
 -      <groupId>tomcat</groupId>
 -      <artifactId>jasper-compiler</artifactId>
 -      <scope>runtime</scope>
-+        <groupId>org.glassfish.web</groupId>
-+        <artifactId>javax.servlet.jsp</artifactId>
-+        <version>2.2.6</version>
++      <groupId>org.glassfish.web</groupId>
++      <artifactId>javax.servlet.jsp</artifactId>
++      <version>2.2.6</version>
      </dependency>
      <dependency>
 -      <groupId>tomcat</groupId>
 -      <artifactId>jasper-runtime</artifactId>
 -      <scope>runtime</scope>
-+        <groupId>org.apache.tomcat</groupId>
-+        <artifactId>tomcat-servlet-api</artifactId>
-+        <version>7.0.37</version>
++      <groupId>org.apache.tomcat</groupId>
++      <artifactId>tomcat-servlet-api</artifactId>
++      <version>7.0.37</version>
      </dependency>
      <dependency>
 -      <groupId>javax.servlet.jsp</groupId>
 -      <artifactId>jsp-api</artifactId>
 -      <scope>runtime</scope>
-+        <groupId>org.apache.tomcat</groupId>
-+        <artifactId>tomcat-el-api</artifactId>
-+        <version>7.0.37</version>
++      <groupId>org.apache.tomcat</groupId>
++      <artifactId>tomcat-el-api</artifactId>
++      <version>7.0.37</version>
      </dependency>
      <dependency>
        <groupId>commons-el</groupId>
-@@ -218,6 +245,11 @@
+@@ -213,6 +241,11 @@
        <groupId>com.jcraft</groupId>
        <artifactId>jsch</artifactId>
      </dependency>
@@ -422,13 +425,13 @@ index 9e318ae..949db05 100644
  /**
   * General servlet which is admin-authorized.
 diff --git a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java
-index 7b5b17e..009403b 100644
+index c5cd556..bd11b9c 100644
 --- a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java
 +++ b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/http/HttpServer.java
-@@ -60,27 +60,28 @@
- import org.apache.hadoop.security.authorize.AccessControlList;
+@@ -61,27 +61,28 @@
  import org.apache.hadoop.security.ssl.SSLFactory;
  import org.apache.hadoop.util.ReflectionUtils;
+ import org.apache.hadoop.util.Shell;
 -import org.mortbay.io.Buffer;
 -import org.mortbay.jetty.Connector;
 -import org.mortbay.jetty.Handler;
@@ -472,7 +475,7 @@ index 7b5b17e..009403b 100644
  /**
   * Create a Jetty embedded server to answer http requests. The primary goal
   * is to serve up status information for the server.
-@@ -111,11 +112,12 @@
+@@ -112,11 +113,12 @@
  
    private SSLFactory sslFactory;
    protected final Server webServer;
@@ -488,7 +491,7 @@ index 7b5b17e..009403b 100644
    protected final List<String> filterNames = new ArrayList<String>();
    private static final int MAX_RETRIES = 10;
    static final String STATE_DESCRIPTION_ALIVE = " - alive";
-@@ -126,12 +128,12 @@
+@@ -127,12 +129,12 @@
    /** Same as this(name, bindAddress, port, findPort, null); */
    public HttpServer(String name, String bindAddress, int port, boolean findPort
        ) throws IOException {
@@ -504,7 +507,7 @@ index 7b5b17e..009403b 100644
    }
  
    /**
-@@ -150,7 +152,7 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -151,7 +153,7 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf, String[] pathSpecs) throws IOException {
@@ -513,7 +516,7 @@ index 7b5b17e..009403b 100644
    }
    
    /**
-@@ -164,13 +166,13 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -165,13 +167,13 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf) throws IOException {
@@ -529,7 +532,7 @@ index 7b5b17e..009403b 100644
    }
  
    /**
-@@ -186,8 +188,8 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -187,8 +189,8 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf, AccessControlList adminsAcl, 
@@ -540,7 +543,7 @@ index 7b5b17e..009403b 100644
    }
  
    /**
-@@ -206,11 +208,17 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -207,11 +209,17 @@ public HttpServer(String name, String bindAddress, int port,
     */
    public HttpServer(String name, String bindAddress, int port,
        boolean findPort, Configuration conf, AccessControlList adminsAcl, 
@@ -560,7 +563,7 @@ index 7b5b17e..009403b 100644
      if(connector == null) {
        listenerStartedExternally = false;
        if (HttpConfig.isSecure()) {
-@@ -220,11 +228,18 @@ public HttpServer(String name, String bindAddress, int port,
+@@ -221,11 +229,18 @@ public HttpServer(String name, String bindAddress, int port,
          } catch (GeneralSecurityException ex) {
            throw new IOException(ex);
          }
@@ -584,7 +587,7 @@ index 7b5b17e..009403b 100644
          };
          listener = sslListener;
        } else {
-@@ -239,17 +254,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -240,17 +255,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
      
      webServer.addConnector(listener);
  
@@ -603,7 +606,7 @@ index 7b5b17e..009403b 100644
  
      webAppContext = new WebAppContext();
      webAppContext.setDisplayName(name);
-@@ -258,7 +264,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -259,7 +265,8 @@ protected SSLServerSocketFactory createFactory() throws Exception {
      webAppContext.getServletContext().setAttribute(CONF_CONTEXT_ATTRIBUTE, conf);
      webAppContext.getServletContext().setAttribute(ADMINS_ACL, adminsAcl);
      addNoCacheFilter(webAppContext);
@@ -613,7 +616,7 @@ index 7b5b17e..009403b 100644
  
      addDefaultApps(contexts, appDir, conf);
          
-@@ -293,19 +300,30 @@ private void addNoCacheFilter(WebAppContext ctxt) {
+@@ -294,26 +301,37 @@ private void addNoCacheFilter(WebAppContext ctxt) {
     * provided. This wrapper and all subclasses must create at least one
     * listener.
     */
@@ -630,8 +633,6 @@ index 7b5b17e..009403b 100644
 -    ret.setAcceptQueueSize(128);
 -    ret.setResolveNames(false);
 -    ret.setUseDirectBuffers(false);
--    ret.setHeaderBufferSize(1024*64);
--    return ret;
 +  public static ServerConnector createDefaultChannelConnector(Server server) {
 +    HttpConfiguration http_config = new HttpConfiguration();
 +    http_config.setRequestHeaderSize(1024*64);
@@ -639,6 +640,16 @@ index 7b5b17e..009403b 100644
 +    ServerConnector conn = new ServerConnector(server, new HttpConnectionFactory(http_config));
 +    conn.setAcceptQueueSize(128);
 +    conn.setIdleTimeout(10000);
+     if(Shell.WINDOWS) {
+       // result of setting the SO_REUSEADDR flag is different on Windows
+       // http://msdn.microsoft.com/en-us/library/ms740621(v=vs.85).aspx
+       // without this 2 NN's can start on the same machine and listen on 
+       // the same port with indeterminate routing of incoming requests to them
+-      ret.setReuseAddress(false);
++      conn.setReuseAddress(false);
+     }
+-    ret.setHeaderBufferSize(1024*64);
+-    return ret;
 +    return conn;
 +  }
 +
@@ -654,7 +665,7 @@ index 7b5b17e..009403b 100644
    }
  
    /** Get an array of FilterConfiguration specified in the conf */
-@@ -337,14 +355,14 @@ protected void addDefaultApps(ContextHandlerCollection parent,
+@@ -345,14 +363,14 @@ protected void addDefaultApps(ContextHandlerCollection parent,
      // set up the context for "/logs/" if "hadoop.log.dir" property is defined. 
      String logDir = System.getProperty("hadoop.log.dir");
      if (logDir != null) {
@@ -671,7 +682,7 @@ index 7b5b17e..009403b 100644
        }
        logContext.setDisplayName("logs");
        setContextAttributes(logContext, conf);
-@@ -352,7 +370,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
+@@ -360,7 +378,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
        defaultContexts.put(logContext, true);
      }
      // set up the context for "/static/*"
@@ -680,7 +691,7 @@ index 7b5b17e..009403b 100644
      staticContext.setResourceBase(appDir + "/static");
      staticContext.addServlet(DefaultServlet.class, "/*");
      staticContext.setDisplayName("static");
-@@ -360,7 +378,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
+@@ -368,7 +386,7 @@ protected void addDefaultApps(ContextHandlerCollection parent,
      defaultContexts.put(staticContext, true);
    }
    
@@ -689,7 +700,7 @@ index 7b5b17e..009403b 100644
      context.getServletContext().setAttribute(CONF_CONTEXT_ATTRIBUTE, conf);
      context.getServletContext().setAttribute(ADMINS_ACL, adminsAcl);
    }
-@@ -377,10 +395,11 @@ protected void addDefaultServlets() {
+@@ -385,10 +403,11 @@ protected void addDefaultServlets() {
      addServlet("conf", "/conf", ConfServlet.class);
    }
  
@@ -703,7 +714,7 @@ index 7b5b17e..009403b 100644
      defaultContexts.put(ctxt, isFiltered);
    }
  
-@@ -481,7 +500,7 @@ public void addInternalServlet(String name, String pathSpec,
+@@ -489,7 +508,7 @@ public void addInternalServlet(String name, String pathSpec,
         FilterMapping fmap = new FilterMapping();
         fmap.setPathSpec(pathSpec);
         fmap.setFilterName(SPNEGO_FILTER);
@@ -712,7 +723,7 @@ index 7b5b17e..009403b 100644
         handler.addFilterMapping(fmap);
      }
    }
-@@ -495,9 +514,9 @@ public void addFilter(String name, String classname,
+@@ -503,9 +522,9 @@ public void addFilter(String name, String classname,
      LOG.info("Added filter " + name + " (class=" + classname
          + ") to context " + webAppContext.getDisplayName());
      final String[] ALL_URLS = { "/*" };
@@ -724,7 +735,7 @@ index 7b5b17e..009403b 100644
          defineFilter(ctx, name, classname, parameters, ALL_URLS);
          LOG.info("Added filter " + name + " (class=" + classname
              + ") to context " + ctx.getDisplayName());
-@@ -511,7 +530,7 @@ public void addGlobalFilter(String name, String classname,
+@@ -519,7 +538,7 @@ public void addGlobalFilter(String name, String classname,
        Map<String, String> parameters) {
      final String[] ALL_URLS = { "/*" };
      defineFilter(webAppContext, name, classname, parameters, ALL_URLS);
@@ -733,12 +744,12 @@ index 7b5b17e..009403b 100644
        defineFilter(ctx, name, classname, parameters, ALL_URLS);
      }
      LOG.info("Added global filter '" + name + "' (class=" + classname + ")");
-@@ -520,16 +539,18 @@ public void addGlobalFilter(String name, String classname,
+@@ -528,16 +547,18 @@ public void addGlobalFilter(String name, String classname,
    /**
     * Define a filter for a context and set up default url mappings.
     */
--  protected void defineFilter(Context ctx, String name,
-+  protected void defineFilter(ServletContextHandler ctx, String name,
+-  public void defineFilter(Context ctx, String name,
++  public void defineFilter(ServletContextHandler ctx, String name,
        String classname, Map<String,String> parameters, String[] urls) {
  
      FilterHolder holder = new FilterHolder();
@@ -755,7 +766,7 @@ index 7b5b17e..009403b 100644
      fmap.setFilterName(name);
      ServletHandler handler = ctx.getServletHandler();
      handler.addFilter(holder, fmap);
-@@ -541,13 +562,13 @@ protected void defineFilter(Context ctx, String name,
+@@ -549,13 +570,13 @@ public void defineFilter(Context ctx, String name,
     * @param webAppCtx The WebApplicationContext to add to
     */
    protected void addFilterPathMapping(String pathSpec,
@@ -771,7 +782,7 @@ index 7b5b17e..009403b 100644
        handler.addFilterMapping(fmap);
      }
    }
-@@ -581,7 +602,7 @@ protected String getWebAppsPath(String appName) throws FileNotFoundException {
+@@ -593,7 +614,7 @@ protected String getWebAppsPath(String appName) throws FileNotFoundException {
     * @return the port
     */
    public int getPort() {
@@ -780,7 +791,7 @@ index 7b5b17e..009403b 100644
    }
  
    /**
-@@ -607,12 +628,12 @@ public void addSslListener(InetSocketAddress addr, String keystore,
+@@ -619,12 +640,12 @@ public void addSslListener(InetSocketAddress addr, String keystore,
      if (webServer.isStarted()) {
        throw new IOException("Failed to add ssl listener");
      }
@@ -797,7 +808,7 @@ index 7b5b17e..009403b 100644
      webServer.addConnector(sslListener);
    }
  
-@@ -636,14 +657,14 @@ public void addSslListener(InetSocketAddress addr, Configuration sslConf,
+@@ -648,14 +669,14 @@ public void addSslListener(InetSocketAddress addr, Configuration sslConf,
        System.setProperty("javax.net.ssl.trustStoreType", sslConf.get(
            "ssl.server.truststore.type", "jks"));
      }
@@ -818,7 +829,7 @@ index 7b5b17e..009403b 100644
      webServer.addConnector(sslListener);
    }
    
-@@ -1075,10 +1096,10 @@ public void doFilter(ServletRequest request,
+@@ -1087,10 +1108,10 @@ public void doFilter(ServletRequest request,
       */
      private String inferMimeType(ServletRequest request) {
        String path = ((HttpServletRequest)request).getRequestURI();
@@ -834,7 +845,7 @@ index 7b5b17e..009403b 100644
  
    }
 diff --git a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics/MetricsServlet.java b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics/MetricsServlet.java
-index af469f9..a6096cf 100644
+index 9d7e1e5..a5e1fe4 100644
 --- a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics/MetricsServlet.java
 +++ b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics/MetricsServlet.java
 @@ -36,8 +36,8 @@
@@ -849,7 +860,7 @@ index af469f9..a6096cf 100644
  /**
   * A servlet to print out metrics data.  By default, the servlet returns a 
 diff --git a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/impl/MetricsSystemImpl.java b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/impl/MetricsSystemImpl.java
-index ec6c7c8..0381020 100644
+index a90888d..15a5c6c 100644
 --- a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/impl/MetricsSystemImpl.java
 +++ b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/impl/MetricsSystemImpl.java
 @@ -38,7 +38,7 @@
@@ -870,19 +881,6 @@ index ec6c7c8..0381020 100644
        String clsName = conf.getClassName("");
        if (clsName == null) continue;  // sink can be registered later on
        String sinkName = entry.getKey();
-diff --git a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/source/JvmMetricsInfo.java b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/source/JvmMetricsInfo.java
-index 83729b1..52a2ebf 100644
---- a/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/source/JvmMetricsInfo.java
-+++ b/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/metrics2/source/JvmMetricsInfo.java
-@@ -28,7 +28,7 @@
-  */
- @InterfaceAudience.Private
- public enum JvmMetricsInfo implements MetricsInfo {
--  JvmMetrics("JVM related metrics etc."), // record infoß
-+  JvmMetrics("JVM related metrics etc."), // record info
-   // metrics
-   MemNonHeapUsedM("Non-heap memory used in MB"),
-   MemNonHeapCommittedM("Non-heap memory committed in MB"),
 diff --git a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/conf/TestConfServlet.java b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/conf/TestConfServlet.java
 index 1c22ee6..90846d9 100644
 --- a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/conf/TestConfServlet.java
@@ -904,7 +902,7 @@ index 1c22ee6..90846d9 100644
 \ No newline at end of file
 +}
 diff --git a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/FSMainOperationsBaseTest.java b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/FSMainOperationsBaseTest.java
-index e9677ba..7cf8fe2 100644
+index 807f0cc..3924ee8 100644
 --- a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/FSMainOperationsBaseTest.java
 +++ b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/FSMainOperationsBaseTest.java
 @@ -32,7 +32,7 @@
@@ -914,9 +912,9 @@ index e9677ba..7cf8fe2 100644
 -import org.mortbay.log.Log;
 +import org.eclipse.jetty.util.log.Log;
  
- import static org.apache.hadoop.fs.FileSystemTestHelper.*;
- 
-@@ -771,7 +771,7 @@ public void testRenameNonExistentPath() throws Exception {
+ /**
+  * <p>
+@@ -779,7 +779,7 @@ public void testRenameNonExistentPath() throws Exception {
        rename(src, dst, false, false, false, Rename.NONE);
        Assert.fail("Should throw FileNotFoundException");
      } catch (IOException e) {
@@ -926,19 +924,19 @@ index e9677ba..7cf8fe2 100644
      }
  
 diff --git a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFileSystemTestSetup.java b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFileSystemTestSetup.java
-index 446b38e..02e2a39 100644
+index 81ca210..461a931 100644
 --- a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFileSystemTestSetup.java
 +++ b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFileSystemTestSetup.java
-@@ -26,7 +26,7 @@
- import org.apache.hadoop.fs.FsConstants;
+@@ -27,7 +27,7 @@
  import org.apache.hadoop.fs.Path;
  import org.apache.hadoop.fs.viewfs.ConfigUtil;
+ import org.apache.hadoop.util.Shell;
 -import org.mortbay.log.Log;
 +import org.eclipse.jetty.util.log.Log;
  
  
  /**
-@@ -83,7 +83,7 @@ static public FileSystem setupForViewFileSystem(Configuration conf, FileSystem f
+@@ -84,7 +84,7 @@ static public FileSystem setupForViewFileSystem(Configuration conf, FileSystemTe
  
      FileSystem fsView = FileSystem.get(FsConstants.VIEWFS_URI, conf);
      fsView.setWorkingDirectory(new Path(wdDir)); // in case testdir relative to wd.
@@ -947,7 +945,7 @@ index 446b38e..02e2a39 100644
      return fsView;
    }
  
-@@ -110,12 +110,12 @@ static void setUpHomeDir(Configuration conf, FileSystem fsTarget) {
+@@ -118,12 +118,12 @@ static void setUpHomeDir(Configuration conf, FileSystem fsTarget) {
      } else { // home dir is at root. Just link the home dir itse
        URI linkTarget = fsTarget.makeQualified(new Path(homeDir)).toUri();
        ConfigUtil.addLink(conf, homeDir, linkTarget);
@@ -962,8 +960,8 @@ index 446b38e..02e2a39 100644
    }
    
    /*
-@@ -127,7 +127,7 @@ static void linkUpFirstComponents(Configuration conf, String path, FileSystem fs
-     String firstComponent = path.substring(0, indexOf2ndSlash);
+@@ -138,7 +138,7 @@ static void linkUpFirstComponents(Configuration conf, String path, FileSystem fs
+     String firstComponent = path.substring(0, indexOfEnd);
      URI linkTarget = fsTarget.makeQualified(new Path(firstComponent)).toUri();
      ConfigUtil.addLink(conf, firstComponent, linkTarget);
 -    Log.info("Added link for " + info + " " 
@@ -972,19 +970,19 @@ index 446b38e..02e2a39 100644
    }
  }
 diff --git a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFsTestSetup.java b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFsTestSetup.java
-index ac63217..6e5879c 100644
+index 92bcbc3..3b62075 100644
 --- a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFsTestSetup.java
 +++ b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/fs/viewfs/ViewFsTestSetup.java
-@@ -25,7 +25,7 @@
- import org.apache.hadoop.fs.FsConstants;
+@@ -26,7 +26,7 @@
  import org.apache.hadoop.fs.Path;
  import org.apache.hadoop.fs.viewfs.ConfigUtil;
+ import org.apache.hadoop.util.Shell;
 -import org.mortbay.log.Log;
 +import org.eclipse.jetty.util.log.Log;
  
  
  /**
-@@ -81,7 +81,7 @@ static public FileContext setupForViewFsLocalFs() throws Exception {
+@@ -82,7 +82,7 @@ static public FileContext setupForViewFsLocalFs(FileContextTestHelper helper) th
      
      FileContext fc = FileContext.getFileContext(FsConstants.VIEWFS_URI, conf);
      fc.setWorkingDirectory(new Path(wdDir)); // in case testdir relative to wd.
@@ -993,7 +991,7 @@ index ac63217..6e5879c 100644
      //System.out.println("SRCOfTests = "+ getTestRootPath(fc, "test"));
      //System.out.println("TargetOfTests = "+ targetOfTests.toUri());
      return fc;
-@@ -106,12 +106,12 @@ static void setUpHomeDir(Configuration conf, FileContext fsTarget) {
+@@ -107,12 +107,12 @@ static void setUpHomeDir(Configuration conf, FileContext fsTarget) {
      } else { // home dir is at root. Just link the home dir itse
        URI linkTarget = fsTarget.makeQualified(new Path(homeDir)).toUri();
        ConfigUtil.addLink(conf, homeDir, linkTarget);
@@ -1008,8 +1006,8 @@ index ac63217..6e5879c 100644
    }
    
    /*
-@@ -124,7 +124,7 @@ static void linkUpFirstComponents(Configuration conf, String path,
-     String firstComponent = path.substring(0, indexOf2ndSlash);
+@@ -128,7 +128,7 @@ static void linkUpFirstComponents(Configuration conf, String path,
+     String firstComponent = path.substring(0, indexOfEnd);
      URI linkTarget = fsTarget.makeQualified(new Path(firstComponent)).toUri();
      ConfigUtil.addLink(conf, firstComponent, linkTarget);
 -    Log.info("Added link for " + info + " " 
@@ -1078,7 +1076,7 @@ index 079bc37..f0e1f17 100644
      } finally {
        myServer.stop();
 diff --git a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java
-index 880804e..80cfd1d 100644
+index e5fd4b0..51ec303 100644
 --- a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java
 +++ b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/http/TestSSLHttpServer.java
 @@ -76,6 +76,7 @@ public void setup() throws Exception {
@@ -1129,26 +1127,6 @@ index ec54f59..d289a03 100644
  
  public class TestMetricsServlet extends TestCase {
    MetricsContext nc1;
-diff --git a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/test/UnitTestcaseTimeLimit.java b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/test/UnitTestcaseTimeLimit.java
-index 5581c7d..e992fea 100644
---- a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/test/UnitTestcaseTimeLimit.java
-+++ b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/test/UnitTestcaseTimeLimit.java
-@@ -18,7 +18,7 @@
- package org.apache.hadoop.test;
- 
- import org.junit.Rule;
--import org.junit.rules.MethodRule;
-+import org.junit.rules.TestRule;
- import org.junit.rules.Timeout;
- 
- /**
-@@ -30,5 +30,5 @@
- public class UnitTestcaseTimeLimit {
-   public final int timeOutSecs = 10;
-   
--  @Rule public MethodRule globalTimeout = new Timeout(timeOutSecs * 1000);
-+  @Rule public TestRule globalTimeout = new Timeout(timeOutSecs * 1000);
- }
 diff --git a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/TestClassUtil.java b/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/TestClassUtil.java
 index fe1284f..91c13a8 100644
 --- a/hadoop-common-project/hadoop-common/src/test/java/org/apache/hadoop/util/TestClassUtil.java
@@ -1167,7 +1145,7 @@ index fe1284f..91c13a8 100644
    }
  }
 diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
-index e882f68..6027cf4 100644
+index 72f3b7b..7839aae 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
 +++ b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
 @@ -34,7 +34,7 @@
@@ -1299,19 +1277,19 @@ index 02e1a71..621a2fa 100644
  fi
  
 diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/tomcat/server.xml b/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/tomcat/server.xml
-index a425bdd..30839f2 100644
+index a425bdd..39c60f5 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/tomcat/server.xml
 +++ b/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/main/tomcat/server.xml
-@@ -1,8 +1,5 @@
+@@ -1,7 +1,7 @@
  <?xml version='1.0' encoding='utf-8'?>
  <!--
--
+ 
 -   All Rights Reserved.
--
++  All Rights Reserved.
+ 
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
-   this work for additional information regarding copyright ownership.
-@@ -23,16 +20,17 @@
+@@ -23,16 +23,17 @@
       Documentation at /docs/config/server.html
   -->
  <Server port="${httpfs.admin.port}" shutdown="SHUTDOWN">
@@ -1336,7 +1314,7 @@ index a425bdd..30839f2 100644
  
    <!-- Global JNDI resources
         Documentation at /docs/jndi-resources-howto.html
-@@ -45,7 +43,7 @@
+@@ -45,7 +46,7 @@
                type="org.apache.catalina.UserDatabase"
                description="User database that can be updated and saved"
                factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
@@ -1345,7 +1323,7 @@ index a425bdd..30839f2 100644
    </GlobalNamingResources>
  
    <!-- A "Service" is a collection of one or more "Connectors" that share
-@@ -71,7 +69,7 @@
+@@ -71,7 +72,7 @@
      -->
      <Connector port="${httpfs.http.port}" protocol="HTTP/1.1"
                 connectionTimeout="20000"
@@ -1354,7 +1332,7 @@ index a425bdd..30839f2 100644
      <!-- A "Connector" using the shared thread pool-->
      <!--
      <Connector executor="tomcatThreadPool"
-@@ -93,10 +91,10 @@
+@@ -93,10 +94,10 @@
  
  
      <!-- An Engine represents the entry point (within Catalina) that processes
@@ -1369,7 +1347,7 @@ index a425bdd..30839f2 100644
  
      <!-- You should set jvmRoute to support load-balancing via AJP ie :
      <Engine name="Catalina" defaultHost="localhost" jvmRoute="jvm1">
-@@ -110,26 +108,19 @@
+@@ -110,26 +111,19 @@
        <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"/>
        -->
  
@@ -1379,13 +1357,6 @@ index a425bdd..30839f2 100644
 -      <!--
 -      <Valve className="org.apache.catalina.valves.RequestDumperValve"/>
 -      -->
--
--      <!-- This Realm uses the UserDatabase configured in the global JNDI
--           resources under the key "UserDatabase".  Any edits
--           that are performed against this UserDatabase are immediately
--           available for use by the Realm.  -->
--      <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
--             resourceName="UserDatabase"/>
 +      <!-- Use the LockOutRealm to prevent attempts to guess user passwords
 +           via a brute-force attack -->
 +      <Realm className="org.apache.catalina.realm.LockOutRealm">
@@ -1397,6 +1368,13 @@ index a425bdd..30839f2 100644
 +               resourceName="UserDatabase"/>
 +      </Realm>
  
+-      <!-- This Realm uses the UserDatabase configured in the global JNDI
+-           resources under the key "UserDatabase".  Any edits
+-           that are performed against this UserDatabase are immediately
+-           available for use by the Realm.  -->
+-      <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+-             resourceName="UserDatabase"/>
+-
 -      <!-- Define the default virtual host
 -           Note: XML Schema validation will not work with Xerces 2.2.
 -       -->
@@ -1408,7 +1386,7 @@ index a425bdd..30839f2 100644
  
          <!-- SingleSignOn valve, share authentication between web applications
               Documentation at: /docs/config/valve.html -->
-@@ -138,11 +129,11 @@
+@@ -138,11 +132,11 @@
          -->
  
          <!-- Access log processes all example.
@@ -1425,7 +1403,7 @@ index a425bdd..30839f2 100644
        </Host>
      </Engine>
 diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java b/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java
-index 3d96fd8..aa1486d 100644
+index 2ec1fcb..20861b3 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/client/BaseTestHttpFSWith.java
 @@ -42,8 +42,8 @@
@@ -1448,6 +1426,21 @@ index 3d96fd8..aa1486d 100644
      server.start();
    }
  
+diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/server/TestHttpFSCustomUserName.java b/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/server/TestHttpFSCustomUserName.java
+index e8407fc..7805633 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/server/TestHttpFSCustomUserName.java
++++ b/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/server/TestHttpFSCustomUserName.java
+@@ -41,8 +41,8 @@
+ import org.json.simple.parser.JSONParser;
+ import org.junit.Assert;
+ import org.junit.Test;
+-import org.mortbay.jetty.Server;
+-import org.mortbay.jetty.webapp.WebAppContext;
++import org.eclipse.jetty.server.Server;
++import org.eclipse.jetty.webapp.WebAppContext;
+ 
+ import java.io.BufferedReader;
+ import java.io.File;
 diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/server/TestHttpFSServer.java b/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/server/TestHttpFSServer.java
 index 6057a48..adf85d5 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/src/test/java/org/apache/hadoop/fs/http/server/TestHttpFSServer.java
@@ -1602,11 +1595,11 @@ index 4442281..44cf67e 100644
      } catch (MalformedURLException ex) {
        throw new RuntimeException("It should never happen, " + ex.getMessage(), ex);
      }
-diff --git a/hadoop-hdfs-project/hadoop-hdfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs/pom.xml
-index 02e393a..34ec2bb 100644
---- a/hadoop-hdfs-project/hadoop-hdfs/pom.xml
-+++ b/hadoop-hdfs-project/hadoop-hdfs/pom.xml
-@@ -72,12 +72,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+diff --git a/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml
+index 13872c3..c2ceab7 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml
++++ b/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml
+@@ -85,12 +85,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
        <scope>compile</scope>
      </dependency>
      <dependency>
@@ -1622,31 +1615,7 @@ index 02e393a..34ec2bb 100644
        <artifactId>jetty-util</artifactId>
        <scope>compile</scope>
      </dependency>
-@@ -122,11 +122,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
-       <scope>compile</scope>
-     </dependency>
-     <dependency>
--      <groupId>javax.servlet.jsp</groupId>
--      <artifactId>jsp-api</artifactId>
--      <scope>compile</scope>
--    </dependency>
--    <dependency>
-       <groupId>log4j</groupId>
-       <artifactId>log4j</artifactId>
-       <scope>compile</scope>
-@@ -137,11 +132,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
-       <scope>compile</scope>
-     </dependency>
-     <dependency>
--      <groupId>javax.servlet</groupId>
--      <artifactId>servlet-api</artifactId>
--      <scope>compile</scope>
--    </dependency>
--    <dependency>
-       <groupId>junit</groupId>
-       <artifactId>junit</artifactId>
-       <scope>test</scope>
-@@ -167,11 +157,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+@@ -180,11 +180,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
        <scope>compile</scope>
      </dependency>
      <dependency>
@@ -1658,7 +1627,63 @@ index 02e393a..34ec2bb 100644
        <groupId>xmlenc</groupId>
        <artifactId>xmlenc</artifactId>
        <scope>compile</scope>
-@@ -193,101 +178,71 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs/pom.xml
+index f8f2918..fd43842 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/pom.xml
++++ b/hadoop-hdfs-project/hadoop-hdfs/pom.xml
+@@ -71,12 +71,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+-      <groupId>org.mortbay.jetty</groupId>
+-      <artifactId>jetty</artifactId>
++      <groupId>org.eclipse.jetty</groupId>
++      <artifactId>jetty-server</artifactId>
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+-      <groupId>org.mortbay.jetty</groupId>
++      <groupId>org.eclipse.jetty</groupId>
+       <artifactId>jetty-util</artifactId>
+       <scope>compile</scope>
+     </dependency>
+@@ -121,11 +121,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+-      <groupId>javax.servlet.jsp</groupId>
+-      <artifactId>jsp-api</artifactId>
+-      <scope>compile</scope>
+-    </dependency>
+-    <dependency>
+       <groupId>log4j</groupId>
+       <artifactId>log4j</artifactId>
+       <scope>compile</scope>
+@@ -136,11 +131,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+-      <groupId>javax.servlet</groupId>
+-      <artifactId>servlet-api</artifactId>
+-      <scope>compile</scope>
+-    </dependency>
+-    <dependency>
+       <groupId>junit</groupId>
+       <artifactId>junit</artifactId>
+       <scope>test</scope>
+@@ -166,11 +156,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+-      <groupId>tomcat</groupId>
+-      <artifactId>jasper-runtime</artifactId>
+-      <scope>compile</scope>
+-    </dependency>
+-    <dependency>
+       <groupId>xmlenc</groupId>
+       <artifactId>xmlenc</artifactId>
+       <scope>compile</scope>
+@@ -192,101 +177,90 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
          </configuration>
        </plugin>
        <plugin>
@@ -1769,17 +1794,32 @@ index 02e393a..34ec2bb 100644
            </execution>
          </executions>
          <dependencies>
++          <!-- volatile mix of glassfish 2.2 jspc impl & Tomcat's servlet 3.0 api
++               EXERCISE CAUTION when messing with these
++          -->
++          <dependency>
++            <groupId>org.glassfish.web</groupId>
++            <artifactId>javax.servlet.jsp</artifactId>
++            <version>2.2.5</version>
++            <scope>runtime</scope>
++          </dependency>
            <dependency>
 -            <groupId>org.codehaus.mojo.jspc</groupId>
 -            <artifactId>jspc-compiler-tomcat5</artifactId>
 -            <version>2.0-alpha-3</version>
--          </dependency>
--          <dependency>
++            <groupId>org.apache.tomcat</groupId>
++            <artifactId>tomcat-servlet-api</artifactId>
++            <version>7.0.37</version>
+           </dependency>
+           <dependency>
 -            <groupId>org.slf4j</groupId>
 -            <artifactId>slf4j-log4j12</artifactId>
 -            <version>1.4.1</version>
--          </dependency>
--          <dependency>
++            <groupId>org.apache.tomcat</groupId>
++            <artifactId>tomcat-el-api</artifactId>
++            <version>7.0.37</version>
+           </dependency>
+           <dependency>
 -            <groupId>org.slf4j</groupId>
 -            <artifactId>jcl104-over-slf4j</artifactId>
 -            <version>1.4.1</version>
@@ -1789,7 +1829,7 @@ index 02e393a..34ec2bb 100644
            </dependency>
          </dependencies>
        </plugin>
-@@ -330,7 +285,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+@@ -329,7 +303,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
            </execution>
            <execution>
              <id>create-web-xmls</id>
@@ -1816,33 +1856,59 @@ index 32b0583..4930816 100644
            if (LOG.isDebugEnabled()) {
              LOG.debug("Found " + mostRecentSize + " bookies up, "
                        + "waiting for " + count);
-diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java
-index 0be46de..b2834b8 100644
---- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java
-+++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java
-@@ -171,7 +171,7 @@
- import org.apache.hadoop.util.StringUtils;
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSOutputStream.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSOutputStream.java
+index 0747f41..42a5417 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSOutputStream.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSOutputStream.java
+@@ -85,7 +85,7 @@
+ import org.apache.hadoop.util.DataChecksum;
+ import org.apache.hadoop.util.Progressable;
  import org.apache.hadoop.util.Time;
- import org.apache.hadoop.util.VersionInfo;
+-import org.mortbay.log.Log;
++import org.eclipse.jetty.util.log.Log;
+ 
+ import com.google.common.annotations.VisibleForTesting;
+ import com.google.common.cache.CacheBuilder;
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/server/JournalNode.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/server/JournalNode.java
+index 4ed4244..a234292 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/server/JournalNode.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/qjournal/server/JournalNode.java
+@@ -42,7 +42,7 @@
+ import org.apache.hadoop.util.StringUtils;
+ import org.apache.hadoop.util.Tool;
+ import org.apache.hadoop.util.ToolRunner;
 -import org.mortbay.util.ajax.JSON;
 +import org.eclipse.jetty.util.ajax.JSON;
  
- import com.google.common.annotations.VisibleForTesting;
- import com.google.common.base.Joiner;
-@@ -366,7 +366,7 @@ private void startInfoServer(Configuration conf) throws IOException {
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.Maps;
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java
+index 389843c..5aadbfb 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/DataNode.java
+@@ -86,7 +86,7 @@
+ import org.apache.hadoop.util.*;
+ import org.apache.hadoop.util.DiskChecker.DiskErrorException;
+ import org.apache.hadoop.util.DiskChecker.DiskOutOfSpaceException;
+-import org.mortbay.util.ajax.JSON;
++import org.eclipse.jetty.util.ajax.JSON;
+ 
+ import java.io.*;
+ import java.net.*;
+@@ -307,7 +307,7 @@ private void startInfoServer(Configuration conf) throws IOException {
             conf, new AccessControlList(conf.get(DFS_ADMIN, " ")))
         : new HttpServer("datanode", infoHost, tmpInfoPort, tmpInfoPort == 0,
             conf, new AccessControlList(conf.get(DFS_ADMIN, " ")),
 -           secureResources.getListener());
 +           secureResources.getListener(), null, secureResources.getServer());
+ 
      LOG.info("Opened info server at " + infoHost + ":" + tmpInfoPort);
      if (conf.getBoolean(DFS_HTTPS_ENABLE_KEY, false)) {
-       boolean needClientAuth = conf.getBoolean(DFS_CLIENT_HTTPS_NEED_AUTH_KEY,
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java
-index 0fda306..77c6c82 100644
+index 0fda306..2e80cfb 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/datanode/SecureDataNodeStarter.java
-@@ -32,14 +32,15 @@
+@@ -32,13 +32,15 @@
  import org.apache.hadoop.http.HttpServer;
  import org.apache.hadoop.security.UserGroupInformation;
  import org.apache.hadoop.security.ssl.SSLFactory;
@@ -1856,12 +1922,12 @@ index 0fda306..77c6c82 100644
  import javax.net.ssl.SSLServerSocketFactory;
  
  import com.google.common.annotations.VisibleForTesting;
- 
++import org.eclipse.jetty.util.ssl.SslContextFactory;
 +
+ 
  /**
   * Utility class to start a datanode in a secure cluster, first obtaining 
-  * privileged resources before main startup and handing them to the datanode.
-@@ -50,17 +51,21 @@
+@@ -50,17 +52,21 @@
     */
    public static class SecureResources {
      private final ServerSocket streamingSocket;
@@ -1886,7 +1952,7 @@ index 0fda306..77c6c82 100644
    }
    
    private String [] args;
-@@ -94,6 +99,9 @@ public void start() throws Exception {
+@@ -94,6 +100,9 @@ public void start() throws Exception {
    @VisibleForTesting
    public static SecureResources getSecureResources(final SSLFactory sslFactory,
                                    Configuration conf) throws Exception {
@@ -1896,7 +1962,7 @@ index 0fda306..77c6c82 100644
      // Obtain secure port for data streaming to datanode
      InetSocketAddress streamingAddr  = DataNode.getStreamingAddr(conf);
      int socketWriteTimeout = conf.getInt(DFSConfigKeys.DFS_DATANODE_SOCKET_WRITE_TIMEOUT_KEY,
-@@ -110,22 +118,28 @@ public static SecureResources getSecureResources(final SSLFactory sslFactory,
+@@ -110,22 +119,29 @@ public static SecureResources getSecureResources(final SSLFactory sslFactory,
      }
  
      // Obtain secure listener for web server
@@ -1910,20 +1976,18 @@ index 0fda306..77c6c82 100644
        }
 -      SslSocketConnector sslListener = new SslSocketConnector() {
 -        @Override
--        protected SSLServerSocketFactory createFactory() throws Exception {
--          return sslFactory.createSSLServerSocketFactory();
--        }
++      // Jetty 8+ moved JKS config to SslContextFactory
 +      SslContextFactory sslContextFactory = new SslContextFactory(conf.get("ssl.server.keystore.location",""));
 +      sslContextFactory.setKeyStorePassword(conf.get("ssl.server.keystore.password",""));
 +      if (sslFactory.isClientCertRequired()) {
-+          sslContextFactory.setTrustStorePath(conf.get("ssl.server.truststore.location",""));
-+          sslContextFactory.setTrustStorePassword(conf.get("ssl.server.truststore.password",""));
-+          sslContextFactory.setTrustStoreType(conf.get("ssl.server.truststore.type", "jks"));
++        sslContextFactory.setTrustStorePath(conf.get("ssl.server.truststore.location",""));
++        sslContextFactory.setTrustStorePassword(conf.get("ssl.server.truststore.password",""));
++        sslContextFactory.setTrustStoreType(conf.get("ssl.server.truststore.type", "jks"));
 +      }
 +      ServerConnector sslListener = new ServerConnector(server, sslContextFactory) {
-+          protected SSLServerSocketFactory createFactory() throws Exception {
-+              return sslFactory.createSSLServerSocketFactory();
-+          }
+         protected SSLServerSocketFactory createFactory() throws Exception {
+           return sslFactory.createSSLServerSocketFactory();
+         }
        };
        listener = sslListener;
      } else {
@@ -1932,7 +1996,7 @@ index 0fda306..77c6c82 100644
      }
  
      InetSocketAddress infoSocAddr = DataNode.getInfoAddr(conf);
-@@ -138,7 +152,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -138,7 +154,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
            "context. Needed " + streamingAddr.getPort() + ", got " + ss.getLocalPort());
      }
      System.err.println("Successfully obtained privileged resources (streaming port = "
@@ -1941,7 +2005,7 @@ index 0fda306..77c6c82 100644
      
      if ((ss.getLocalPort() > 1023 || listener.getPort() > 1023) &&
          UserGroupInformation.isSecurityEnabled()) {
-@@ -146,7 +160,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
+@@ -146,7 +162,7 @@ protected SSLServerSocketFactory createFactory() throws Exception {
      }
      System.err.println("Opened streaming server at " + streamingAddr);
      System.err.println("Opened info server at " + infoSocAddr);
@@ -1951,10 +2015,10 @@ index 0fda306..77c6c82 100644
  
  }
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java
-index 8c114c3..7544cd1 100644
+index 856312f..d7a14a4 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java
-@@ -201,7 +201,7 @@
+@@ -228,7 +228,7 @@
  import org.apache.hadoop.util.DataChecksum;
  import org.apache.hadoop.util.Time;
  import org.apache.hadoop.util.VersionInfo;
@@ -1977,33 +2041,95 @@ index aa4ba5d..5b945ba 100644
  @InterfaceAudience.Private
  public class StreamFile extends DfsServlet {
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/JsonUtil.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/JsonUtil.java
-index f251e34..bed9d58 100644
+index 9fb6dfd..6246091 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/JsonUtil.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/JsonUtil.java
-@@ -47,7 +47,7 @@
+@@ -30,7 +30,7 @@
  import org.apache.hadoop.security.token.TokenIdentifier;
  import org.apache.hadoop.util.DataChecksum;
  import org.apache.hadoop.util.StringUtils;
 -import org.mortbay.util.ajax.JSON;
 +import org.eclipse.jetty.util.ajax.JSON;
  
- /** JSON Utilities */
- public class JsonUtil {
+ import java.io.ByteArrayInputStream;
+ import java.io.DataInputStream;
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java
-index 5b32826..f130da1 100644
+index 4c5790d..6d0ddf2 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/web/WebHdfsFileSystem.java
-@@ -82,7 +82,7 @@
+@@ -102,7 +102,7 @@
+ import org.apache.hadoop.security.token.TokenRenewer;
  import org.apache.hadoop.security.token.delegation.AbstractDelegationTokenSelector;
  import org.apache.hadoop.util.Progressable;
- import org.apache.hadoop.util.StringUtils;
 -import org.mortbay.util.ajax.JSON;
 +import org.eclipse.jetty.util.ajax.JSON;
  
+ import com.google.common.annotations.VisibleForTesting;
  import com.google.common.base.Charsets;
- import com.google.common.collect.Lists;
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/qjournal/server/TestJournalNodeMXBean.java b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/qjournal/server/TestJournalNodeMXBean.java
+index 3471848..b4e0202 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/qjournal/server/TestJournalNodeMXBean.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/qjournal/server/TestJournalNodeMXBean.java
+@@ -34,7 +34,7 @@
+ import org.junit.After;
+ import org.junit.Before;
+ import org.junit.Test;
+-import org.mortbay.util.ajax.JSON;
++import org.eclipse.jetty.util.ajax.JSON;
+ 
+ /**
+  * Test {@link JournalNodeMXBean}
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java
+index 7503493..0561fcf 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/blockmanagement/TestDatanodeManager.java
+@@ -30,7 +30,7 @@
+ import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
+ import org.junit.Test;
+ import org.mockito.Mockito;
+-import org.mortbay.log.Log;
++import org.eclipse.jetty.util.log.Log;
+ 
+ import static org.junit.Assert.*;
+ 
+@@ -57,7 +57,7 @@ public void testNumVersionsReportedCorrect() throws IOException {
+     Random rng = new Random();
+     int seed = rng.nextInt();
+     rng = new Random(seed);
+-    Log.info("Using seed " + seed + " for testing");
++    Log.getRootLogger().info("Using seed " + seed + " for testing");
+ 
+     //A map of the Storage IDs to the DN registration it was registered with
+     HashMap <String, DatanodeRegistration> sIdToDnReg =
+@@ -76,7 +76,7 @@ public void testNumVersionsReportedCorrect() throws IOException {
+           it.next();
+         }
+         DatanodeRegistration toRemove = it.next().getValue();
+-        Log.info("Removing node " + toRemove.getStorageID() + " ip " +
++        Log.getRootLogger().info("Removing node " + toRemove.getStorageID() + " ip " +
+         toRemove.getXferAddr() + " version : " + toRemove.getSoftwareVersion());
+ 
+         //Remove that random node
+@@ -110,7 +110,7 @@ public void testNumVersionsReportedCorrect() throws IOException {
+         Mockito.when(dr.getSoftwareVersion()).thenReturn(
+           "version" + rng.nextInt(5));
+ 
+-        Log.info("Registering node storageID: " + dr.getStorageID() +
++        Log.getRootLogger().info("Registering node storageID: " + dr.getStorageID() +
+           ", version: " + dr.getSoftwareVersion() + ", IP address: "
+           + dr.getXferAddr());
+ 
+@@ -136,7 +136,7 @@ public void testNumVersionsReportedCorrect() throws IOException {
+         }
+       }
+       for(Entry <String, Integer> entry: mapToCheck.entrySet()) {
+-        Log.info("Still in map: " + entry.getKey() + " has "
++        Log.getRootLogger().info("Still in map: " + entry.getKey() + " has "
+           + entry.getValue());
+       }
+       assertEquals("The map of version counts returned by DatanodeManager was"
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestNameNodeMXBean.java b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestNameNodeMXBean.java
-index cf624b7..6ae1a20 100644
+index 2d9a70c..d6e6fab 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestNameNodeMXBean.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestNameNodeMXBean.java
 @@ -34,7 +34,7 @@
@@ -2015,6 +2141,19 @@ index cf624b7..6ae1a20 100644
  
  /**
   * Class for testing {@link NameNodeMXBean} implementation
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStartupProgressServlet.java b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStartupProgressServlet.java
+index 544f44f..b33f97e 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStartupProgressServlet.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStartupProgressServlet.java
+@@ -36,7 +36,7 @@
+ import org.apache.hadoop.hdfs.server.namenode.startupprogress.StartupProgress;
+ import org.junit.Before;
+ import org.junit.Test;
+-import org.mortbay.util.ajax.JSON;
++import org.eclipse.jetty.util.ajax.JSON;
+ 
+ public class TestStartupProgressServlet {
+ 
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStreamFile.java b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStreamFile.java
 index daaa6d8..683f414 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStreamFile.java
@@ -2029,10 +2168,10 @@ index daaa6d8..683f414 100644
  /*
   * Mock input stream class that always outputs the current position of the stream. 
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/web/TestJsonUtil.java b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/web/TestJsonUtil.java
-index aa2393d..432f92e 100644
+index 5460047..3b691db 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/web/TestJsonUtil.java
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/web/TestJsonUtil.java
-@@ -27,7 +27,7 @@
+@@ -28,7 +28,7 @@
  import org.apache.hadoop.util.Time;
  import org.junit.Assert;
  import org.junit.Test;
@@ -2055,11 +2194,11 @@ index 7029f42..c7023c9 100644
  /**
   * This class drives the creation of a mini-cluster on the local machine. By
 diff --git a/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/JobEndNotifier.java b/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/JobEndNotifier.java
-index 518305f..87be820 100644
+index 981e6ff..394810c 100644
 --- a/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/JobEndNotifier.java
 +++ b/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/JobEndNotifier.java
-@@ -29,7 +29,7 @@
- import org.apache.hadoop.conf.Configuration;
+@@ -30,7 +30,7 @@
+ import org.apache.hadoop.mapred.JobContext;
  import org.apache.hadoop.mapreduce.MRJobConfig;
  import org.apache.hadoop.mapreduce.v2.api.records.JobReport;
 -import org.mortbay.log.Log;
@@ -2067,7 +2206,7 @@ index 518305f..87be820 100644
  
  /**
   * <p>This class handles job end notification. Submitters of jobs can choose to
-@@ -97,10 +97,10 @@ public void setConf(Configuration conf) {
+@@ -102,10 +102,10 @@ public void setConf(Configuration conf) {
          int port = Integer.parseInt(portConf);
          proxyToUse = new Proxy(proxyType,
            new InetSocketAddress(hostname, port));
@@ -2080,7 +2219,7 @@ index 518305f..87be820 100644
            + portConf + ". Not going to use a proxy");
        }
      }
-@@ -118,23 +118,23 @@ public Configuration getConf() {
+@@ -122,23 +122,23 @@ public Configuration getConf() {
    protected boolean notifyURLOnce() {
      boolean success = false;
      try {
@@ -2088,8 +2227,8 @@ index 518305f..87be820 100644
 +      Log.getRootLogger().info("Job end notification trying " + urlToNotify);
        HttpURLConnection conn =
          (HttpURLConnection) urlToNotify.openConnection(proxyToUse);
-       conn.setConnectTimeout(5*1000);
-       conn.setReadTimeout(5*1000);
+       conn.setConnectTimeout(timeout);
+       conn.setReadTimeout(timeout);
        conn.setAllowUserInteraction(false);
        if(conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 -        Log.warn("Job end notification to " + urlToNotify +" failed with code: "
@@ -2108,7 +2247,7 @@ index 518305f..87be820 100644
      }
      return success;
    }
-@@ -149,7 +149,7 @@ public void notify(JobReport jobReport)
+@@ -153,7 +153,7 @@ public void notify(JobReport jobReport)
      throws InterruptedException {
      // Do we need job-end notification?
      if (userUrl == null) {
@@ -2117,7 +2256,7 @@ index 518305f..87be820 100644
        return;
      }
  
-@@ -165,23 +165,23 @@ public void notify(JobReport jobReport)
+@@ -169,23 +169,23 @@ public void notify(JobReport jobReport)
      try {
        urlToNotify = new URL(userUrl);
      } catch (MalformedURLException mue) {
@@ -2146,10 +2285,10 @@ index 518305f..87be820 100644
    }
  }
 diff --git a/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/test/java/org/apache/hadoop/mapreduce/v2/hs/webapp/TestHsWebServicesJobsQuery.java b/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/test/java/org/apache/hadoop/mapreduce/v2/hs/webapp/TestHsWebServicesJobsQuery.java
-index 0b23c95..b08b854 100644
+index 8891ec7..1dd369a 100644
 --- a/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/test/java/org/apache/hadoop/mapreduce/v2/hs/webapp/TestHsWebServicesJobsQuery.java
 +++ b/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs/src/test/java/org/apache/hadoop/mapreduce/v2/hs/webapp/TestHsWebServicesJobsQuery.java
-@@ -238,7 +238,7 @@ public void testJobsQueryStateNone() throws JSONException, Exception {
+@@ -136,7 +136,7 @@ public void testJobsQueryStateNone() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2158,7 +2297,7 @@ index 0b23c95..b08b854 100644
    }
  
    @Test
-@@ -304,7 +304,7 @@ public void testJobsQueryUserNone() throws JSONException, Exception {
+@@ -202,7 +202,7 @@ public void testJobsQueryUserNone() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2167,7 +2306,7 @@ index 0b23c95..b08b854 100644
    }
  
    @Test
-@@ -389,7 +389,7 @@ public void testJobsQueryQueueNonExist() throws JSONException, Exception {
+@@ -287,7 +287,7 @@ public void testJobsQueryQueueNonExist() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2176,7 +2315,7 @@ index 0b23c95..b08b854 100644
    }
  
    @Test
-@@ -421,7 +421,7 @@ public void testJobsQueryStartTimeBegin() throws JSONException, Exception {
+@@ -319,7 +319,7 @@ public void testJobsQueryStartTimeBegin() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2185,7 +2324,7 @@ index 0b23c95..b08b854 100644
    }
  
    @Test
-@@ -741,7 +741,7 @@ public void testJobsQueryFinishTimeEnd() throws JSONException, Exception {
+@@ -639,7 +639,7 @@ public void testJobsQueryFinishTimeEnd() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2244,7 +2383,7 @@ index 35b5e30..91964bd 100644
  /**
   * This class drives the creation of a mini-cluster on the local machine. By
 diff --git a/hadoop-mapreduce-project/hadoop-mapreduce-client/pom.xml b/hadoop-mapreduce-project/hadoop-mapreduce-client/pom.xml
-index 1581bab..48d0f6b 100644
+index 18fbb74..c71db66 100644
 --- a/hadoop-mapreduce-project/hadoop-mapreduce-client/pom.xml
 +++ b/hadoop-mapreduce-project/hadoop-mapreduce-client/pom.xml
 @@ -43,8 +43,8 @@
@@ -2290,7 +2429,7 @@ index 1581bab..48d0f6b 100644
   
    <build>
 diff --git a/hadoop-mapreduce-project/pom.xml b/hadoop-mapreduce-project/pom.xml
-index 14686e7..84cb12c 100644
+index 11640d7..6290e72 100644
 --- a/hadoop-mapreduce-project/pom.xml
 +++ b/hadoop-mapreduce-project/pom.xml
 @@ -53,8 +53,8 @@
@@ -2324,10 +2463,19 @@ index 14686e7..84cb12c 100644
        </exclusions>
      </dependency>
 diff --git a/hadoop-project/pom.xml b/hadoop-project/pom.xml
-index 0e45314..b19e788 100644
+index b7a7456..abdf900 100644
 --- a/hadoop-project/pom.xml
 +++ b/hadoop-project/pom.xml
-@@ -290,8 +290,8 @@
+@@ -63,7 +63,7 @@
+     <avro.version>1.7.4</avro.version>
+ 
+     <!-- jersey version -->
+-    <jersey.version>1.9</jersey.version>
++    <jersey.version>1.17.1</jersey.version>
+ 
+     <!-- ProtocolBuffer version, used to verify the protoc version and -->
+     <!-- define the protobuf JAR version                               -->
+@@ -311,8 +311,8 @@
        </dependency>
        <dependency>
          <groupId>org.apache.commons</groupId>
@@ -2337,8 +2485,8 @@ index 0e45314..b19e788 100644
 +        <version>3.1.1</version>
        </dependency>
        <dependency>
-         <groupId>xmlenc</groupId>
-@@ -316,23 +316,17 @@
+         <groupId>org.apache.commons</groupId>
+@@ -342,23 +342,17 @@
        <dependency>
          <groupId>javax.servlet</groupId>
          <artifactId>servlet-api</artifactId>
@@ -2368,36 +2516,18 @@ index 0e45314..b19e788 100644
        </dependency>
  
        <dependency>
-@@ -343,12 +337,12 @@
-       <dependency>
-         <groupId>com.sun.jersey</groupId>
-         <artifactId>jersey-core</artifactId>
--        <version>1.8</version>
-+        <version>1.17.1</version>
-       </dependency>
-       <dependency>
-         <groupId>com.sun.jersey</groupId>
-         <artifactId>jersey-json</artifactId>
--        <version>1.8</version>
-+        <version>1.17.1</version>
-         <exclusions>
-           <exclusion>
-             <groupId>javax.xml.stream</groupId>
-@@ -359,7 +353,12 @@
-       <dependency>
-         <groupId>com.sun.jersey</groupId>
+@@ -404,12 +398,23 @@
          <artifactId>jersey-server</artifactId>
--        <version>1.8</version>
-+        <version>1.17.1</version>
-+      </dependency>
+         <version>${jersey.version}</version>
+       </dependency>
 +      <dependency>
 +        <groupId>com.sun.jersey</groupId>
 +        <artifactId>jersey-servlet</artifactId>
-+        <version>1.17.1</version>
-       </dependency>
++        <version>${jersey.version}</version>
++      </dependency>
  
        <dependency>
-@@ -367,6 +366,12 @@
+         <groupId>com.google.inject</groupId>
          <artifactId>guice</artifactId>
          <version>3.0</version>
        </dependency>
@@ -2410,38 +2540,21 @@ index 0e45314..b19e788 100644
  
        <dependency>
          <groupId>com.google.inject.extensions</groupId>
-@@ -377,19 +382,19 @@
-       <dependency>
-         <groupId>com.sun.jersey.contribs</groupId>
-         <artifactId>jersey-guice</artifactId>
--        <version>1.8</version>
-+        <version>1.17.1</version>
-       </dependency>
- 
-       <dependency>
-         <groupId>com.sun.jersey.jersey-test-framework</groupId>
-         <artifactId>jersey-test-framework-core</artifactId>
--        <version>1.8</version>
-+        <version>1.17.1</version>
-         <scope>test</scope>
-       </dependency>
-       <dependency>
-         <groupId>com.sun.jersey.jersey-test-framework</groupId>
-         <artifactId>jersey-test-framework-grizzly2</artifactId>
--        <version>1.8</version>
-+        <version>1.17.1</version>
-       </dependency>
- 
-       <dependency>
-@@ -405,34 +410,9 @@
+@@ -448,34 +453,22 @@
        </dependency>
  
        <dependency>
 -        <groupId>org.mortbay.jetty</groupId>
 -        <artifactId>jetty-servlet-tester</artifactId>
 -        <version>6.1.26</version>
--      </dependency>
--      <dependency>
++        <groupId>org.eclipse.jetty</groupId>
++        <artifactId>test-jetty-servlet</artifactId>
++        <version>9.0.4.v20130625</version>
+       </dependency>
++      <!-- volatile mix of glassfish 2.2 jspc & Tomcat's servlet 3.0 api
++           EXERCISE CAUTION when messing with these
++      -->
+       <dependency>
 -        <groupId>tomcat</groupId>
 -        <artifactId>jasper-compiler</artifactId>
 -        <version>5.5.23</version>
@@ -2460,18 +2573,21 @@ index 0e45314..b19e788 100644
 -        <groupId>tomcat</groupId>
 -        <artifactId>jasper-runtime</artifactId>
 -        <version>5.5.23</version>
--      </dependency>
--      <dependency>
++        <groupId>org.glassfish.web</groupId>
++        <artifactId>javax.servlet.jsp</artifactId>
++        <version>2.2.5</version>
+       </dependency>
+       <dependency>
 -        <groupId>javax.servlet.jsp</groupId>
 -        <artifactId>jsp-api</artifactId>
 -        <version>2.1</version>
-+        <groupId>org.eclipse.jetty</groupId>
-+        <artifactId>test-jetty-servlet</artifactId>
-+        <version>9.0.4.v20130625</version>
++        <groupId>org.apache.tomcat</groupId>
++        <artifactId>tomcat-servlet-api</artifactId>
++        <version>7.0.37</version>
        </dependency>
        <dependency>
          <groupId>commons-el</groupId>
-@@ -440,6 +420,11 @@
+@@ -483,6 +476,11 @@
          <version>1.0</version>
        </dependency>
        <dependency>
@@ -2483,7 +2599,7 @@ index 0e45314..b19e788 100644
          <groupId>commons-logging</groupId>
          <artifactId>commons-logging</artifactId>
          <version>1.1.1</version>
-@@ -493,7 +478,7 @@
+@@ -536,7 +534,7 @@
        <dependency>
          <groupId>net.java.dev.jets3t</groupId>
          <artifactId>jets3t</artifactId>
@@ -2492,25 +2608,7 @@ index 0e45314..b19e788 100644
        </dependency>
        <dependency>
          <groupId>org.apache.mina</groupId>
-@@ -518,7 +503,7 @@
-       <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
--        <version>4.8.2</version>
-+        <version>4.10</version>
-       </dependency>
-       <dependency>
-         <groupId>commons-lang</groupId>
-@@ -608,7 +593,7 @@
-       <dependency>
-         <groupId>com.google.protobuf</groupId>
-         <artifactId>protobuf-java</artifactId>
--        <version>2.4.0a</version>
-+        <version>2.5.0</version>
-       </dependency>
-       <dependency>
-         <groupId>commons-daemon</groupId>
-@@ -654,7 +639,7 @@
+@@ -704,7 +702,7 @@
        <dependency>
          <groupId>org.apache.bookkeeper</groupId>
          <artifactId>bookkeeper-server</artifactId>
@@ -2519,8 +2617,8 @@ index 0e45314..b19e788 100644
          <scope>compile</scope>
        </dependency>
        <dependency>
-@@ -747,9 +732,9 @@
-           <version>1.5.3</version>
+@@ -797,9 +795,9 @@
+           <version>${avro.version}</version>
          </plugin>
          <plugin>
 -          <groupId>org.codehaus.mojo.jspc</groupId>
@@ -2533,7 +2631,7 @@ index 0e45314..b19e788 100644
          <plugin>
            <groupId>org.apache.maven.plugins</groupId>
 diff --git a/hadoop-tools/hadoop-extras/pom.xml b/hadoop-tools/hadoop-extras/pom.xml
-index c6406aa..8e5f7ee 100644
+index cd87e04..0810b34 100644
 --- a/hadoop-tools/hadoop-extras/pom.xml
 +++ b/hadoop-tools/hadoop-extras/pom.xml
 @@ -89,6 +89,11 @@
@@ -2549,7 +2647,7 @@ index c6406aa..8e5f7ee 100644
  
    <build>
 diff --git a/hadoop-tools/hadoop-streaming/pom.xml b/hadoop-tools/hadoop-streaming/pom.xml
-index d6a0337..f43c1cd 100644
+index 4a39cfa..fede1b6 100644
 --- a/hadoop-tools/hadoop-streaming/pom.xml
 +++ b/hadoop-tools/hadoop-streaming/pom.xml
 @@ -95,6 +95,11 @@
@@ -2564,43 +2662,52 @@ index d6a0337..f43c1cd 100644
    </dependencies>
  
    <build>
+diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/api/impl/TestAMRMClient.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/api/impl/TestAMRMClient.java
+index 58ef215..fc6bee1 100644
+--- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/api/impl/TestAMRMClient.java
++++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/src/test/java/org/apache/hadoop/yarn/client/api/impl/TestAMRMClient.java
+@@ -83,7 +83,7 @@
+ import org.junit.Test;
+ import org.mockito.invocation.InvocationOnMock;
+ import org.mockito.stubbing.Answer;
+-import org.mortbay.log.Log;
++import org.eclipse.jetty.util.log.Log;
+ 
+ public class TestAMRMClient {
+   static Configuration conf = null;
+@@ -436,7 +436,7 @@ public void testAMRMClientMatchStorage() throws YarnException, IOException {
+       int iterationsLeft = 3;
+       while (allocatedContainerCount < 2
+           && iterationsLeft-- > 0) {
+-        Log.info(" == alloc " + allocatedContainerCount + " it left " + iterationsLeft);
++        Log.getRootLogger().info(" == alloc " + allocatedContainerCount + " it left " + iterationsLeft);
+         AllocateResponse allocResponse = amClient.allocate(0.1f);
+         assertTrue(amClient.ask.size() == 0);
+         assertTrue(amClient.release.size() == 0);
+@@ -604,7 +604,7 @@ private int getAllocatedContainersNumber(
+       throws YarnException, IOException {
+     int allocatedContainerCount = 0;
+     while (iterationsLeft-- > 0) {
+-      Log.info(" == alloc " + allocatedContainerCount + " it left " + iterationsLeft);
++      Log.getRootLogger().info(" == alloc " + allocatedContainerCount + " it left " + iterationsLeft);
+       AllocateResponse allocResponse = amClient.allocate(0.1f);
+       assertTrue(amClient.ask.size() == 0);
+       assertTrue(amClient.release.size() == 0);
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/WebApps.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/WebApps.java
-index 425d45b..13f2d8b 100644
+index d2ce2f2..2d4b9f1 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/WebApps.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/WebApps.java
-@@ -195,7 +195,7 @@ public void setup() {
-         }
+@@ -219,7 +219,7 @@ public void setup() {
          HttpServer server =
-             new HttpServer(name, bindAddress, port, findPort, conf, 
--            new AdminACLsManager(conf).getAdminAcl(), null, webapp.getServePathSpecs());
-+            new AdminACLsManager(conf).getAdminAcl(), null, webapp.getServePathSpecs(), null);
-         for(ServletStruct struct: servlets) {
-           server.addServlet(struct.name, struct.spec, struct.clazz);
-         }
-diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/example/MyApp.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/example/MyApp.java
-index fbbf4f8..c502e18 100644
---- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/example/MyApp.java
-+++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/java/org/apache/hadoop/yarn/webapp/example/MyApp.java
-@@ -32,7 +32,7 @@
- public class MyApp {
+             new HttpServer(name, bindAddress, port, findPort, conf,
+                 new AdminACLsManager(conf).getAdminAcl(), null,
+-                pathList.toArray(new String[0])) {
++                pathList.toArray(new String[0]), null) {
  
-   // This is an app API
--  public String anyAPI() { return "anything ☁, really!"; }
-+  public String anyAPI() { return "anything, really!"; }
- 
-   // Note this is static so it can be in any files.
-   public static class MyController extends Controller {
-@@ -46,7 +46,7 @@
- 
-     @Override
-     public void index() {
--      set("anything", "something ☯");
-+      set("anything", "something");
-     }
- 
-     public void anythingYouWant() {
+               {
+                 if (UserGroupInformation.isSecurityEnabled()) {
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/webapp/ContainerLogsPage.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/webapp/ContainerLogsPage.java
-index 5fdd957..47af85b 100644
+index 452a823..612eba1 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/webapp/ContainerLogsPage.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/main/java/org/apache/hadoop/yarn/server/nodemanager/webapp/ContainerLogsPage.java
 @@ -57,7 +57,7 @@
@@ -2612,7 +2719,7 @@ index 5fdd957..47af85b 100644
  
  import com.google.inject.Inject;
  
-@@ -308,7 +308,7 @@ private void printLogs(Block html, ContainerId containerId,
+@@ -328,7 +328,7 @@ private void printLogs(Block html, ContainerId containerId,
          try {
            logDir = new URI(logDir).getPath();
          } catch (URISyntaxException e) {
@@ -2621,37 +2728,24 @@ index 5fdd957..47af85b 100644
          }
          String appIdStr = ConverterUtils.toString(containerId
              .getApplicationAttemptId().getApplicationId());
-diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/localizer/TestLocalResourcesTrackerImpl.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/localizer/TestLocalResourcesTrackerImpl.java
-index 0e0a472..762e018 100644
---- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/localizer/TestLocalResourcesTrackerImpl.java
-+++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/localizer/TestLocalResourcesTrackerImpl.java
-@@ -50,7 +50,7 @@
- import org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.event.ResourceRequestEvent;
- import org.apache.hadoop.yarn.util.BuilderUtils;
- import org.junit.Test;
--import org.mortbay.log.Log;
-+import org.eclipse.jetty.util.log.Log;
- 
- public class TestLocalResourcesTrackerImpl {
- 
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/TestLogAggregationService.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/TestLogAggregationService.java
-index 168f619..81ff171 100644
+index bfb0e87..f9fac8e 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/TestLogAggregationService.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/containermanager/logaggregation/TestLogAggregationService.java
-@@ -84,7 +84,7 @@
- import org.apache.hadoop.yarn.util.ConverterUtils;
+@@ -104,7 +104,7 @@
  import org.junit.Test;
  import org.mockito.ArgumentCaptor;
+ import org.mockito.Mockito;
 -import org.mortbay.util.MultiException;
 +import org.eclipse.jetty.util.MultiException;
  
  
- //@Ignore
+ 
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesApps.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesApps.java
-index 39764e6..9e4427a 100644
+index d60d583..034bc4e 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesApps.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesApps.java
-@@ -174,7 +174,7 @@ public void testNodeAppsNone() throws JSONException, Exception {
+@@ -176,7 +176,7 @@ public void testNodeAppsNone() throws JSONException, Exception {
          .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
@@ -2659,8 +2753,8 @@ index 39764e6..9e4427a 100644
 +    assertEquals("apps isn't None",0,json.getJSONObject("apps").length());
    }
  
-   private HashMap<String, String> addAppContainers(Application app) {
-@@ -281,7 +281,7 @@ public void testNodeAppsUserNone() throws JSONException, Exception {
+   private HashMap<String, String> addAppContainers(Application app) 
+@@ -286,7 +286,7 @@ public void testNodeAppsUserNone() throws JSONException, Exception {
          .get(ClientResponse.class);
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
@@ -2669,7 +2763,7 @@ index 39764e6..9e4427a 100644
    }
  
    @Test
-@@ -363,7 +363,7 @@ public void testNodeAppsStateNone() throws JSONException, Exception {
+@@ -368,7 +368,7 @@ public void testNodeAppsStateNone() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
  
@@ -2679,10 +2773,10 @@ index 39764e6..9e4427a 100644
  
    @Test
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesContainers.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesContainers.java
-index 1f678d4..ba27fdb 100644
+index 95016c2..310e18b 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesContainers.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/test/java/org/apache/hadoop/yarn/server/nodemanager/webapp/TestNMWebServicesContainers.java
-@@ -175,7 +175,7 @@ public void testNodeContainersNone() throws JSONException, Exception {
+@@ -183,7 +183,7 @@ public void testNodeContainersNone() throws JSONException, Exception {
          .get(ClientResponse.class);
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
@@ -2690,9 +2784,9 @@ index 1f678d4..ba27fdb 100644
 +    assertEquals("apps isn't None", 0, json.getJSONObject("containers").length());
    }
  
-   private HashMap<String, String> addAppContainers(Application app) {
+   private HashMap<String, String> addAppContainers(Application app) 
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/RMNMInfo.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/RMNMInfo.java
-index 0db42e4..988c21c 100644
+index 5f7002c..945cd29 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/RMNMInfo.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/main/java/org/apache/hadoop/yarn/server/resourcemanager/RMNMInfo.java
 @@ -33,7 +33,7 @@
@@ -2705,10 +2799,10 @@ index 0db42e4..988c21c 100644
  /**
   * JMX bean listing statuses of all node managers.
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesApps.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesApps.java
-index b81237d..183af03 100644
+index 118a621..9dc50d0 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesApps.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesApps.java
-@@ -252,7 +252,7 @@ public void testAppsQueryStateNone() throws JSONException, Exception {
+@@ -376,7 +376,7 @@ public void testAppsQueryStateNone() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2717,7 +2811,7 @@ index b81237d..183af03 100644
      rm.stop();
    }
  
-@@ -331,7 +331,7 @@ public void testAppsQueryFinalStatusNone() throws JSONException, Exception {
+@@ -491,7 +491,7 @@ public void testAppsQueryFinalStatusNone() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2726,7 +2820,7 @@ index b81237d..183af03 100644
      rm.stop();
    }
  
-@@ -507,7 +507,7 @@ public void testAppsQueryStartEnd() throws JSONException, Exception {
+@@ -667,7 +667,7 @@ public void testAppsQueryStartEnd() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2736,10 +2830,10 @@ index b81237d..183af03 100644
    }
  
 diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesNodes.java b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesNodes.java
-index 533ea11..f464b97 100644
+index 1304134..fa160c6 100644
 --- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesNodes.java
 +++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/src/test/java/org/apache/hadoop/yarn/server/resourcemanager/webapp/TestRMWebServicesNodes.java
-@@ -201,7 +201,7 @@ public void testNodesQueryStateNone() throws JSONException, Exception {
+@@ -204,7 +204,7 @@ public void testNodesQueryStateNone() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2748,7 +2842,7 @@ index 533ea11..f464b97 100644
    }
  
    @Test
-@@ -371,7 +371,7 @@ public void testNodesQueryHealthyAndState() throws JSONException, Exception {
+@@ -343,7 +343,7 @@ public void testNodesQueryHealthyFalse() throws JSONException, Exception {
      assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
      JSONObject json = response.getEntity(JSONObject.class);
      assertEquals("incorrect number of elements", 1, json.length());
@@ -2756,21 +2850,12 @@ index 533ea11..f464b97 100644
 +    assertEquals("nodes is not None", 0, json.getJSONObject("nodes").length());
    }
  
-   @Test
-@@ -388,7 +388,7 @@ public void testNodesQueryHealthyFalse() throws JSONException, Exception {
-     assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
-     JSONObject json = response.getEntity(JSONObject.class);
-     assertEquals("incorrect number of elements", 1, json.length());
--    assertEquals("nodes is not null", JSONObject.NULL, json.get("nodes"));
-+    assertEquals("nodes is not None", 0, json.getJSONObject("nodes").length());
-   }
- 
-   @Test
+   public void testNodesHelper(String path, String media) throws JSONException,
 diff --git a/hadoop-yarn-project/hadoop-yarn/pom.xml b/hadoop-yarn-project/hadoop-yarn/pom.xml
-index dc5a574..41e936f 100644
+index bc36c85..01ee8a1 100644
 --- a/hadoop-yarn-project/hadoop-yarn/pom.xml
 +++ b/hadoop-yarn-project/hadoop-yarn/pom.xml
-@@ -43,16 +43,8 @@
+@@ -44,16 +44,8 @@
            <artifactId>commons-el</artifactId>
          </exclusion>
          <exclusion>
@@ -2789,7 +2874,7 @@ index dc5a574..41e936f 100644
          </exclusion>
        </exclusions>
      </dependency>
-@@ -111,6 +103,11 @@
+@@ -112,6 +104,11 @@
        <artifactId>guice</artifactId>
      </dependency>
      <dependency>
@@ -2802,7 +2887,7 @@ index dc5a574..41e936f 100644
        <artifactId>jersey-test-framework-core</artifactId>
        <scope>test</scope>
 diff --git a/hadoop-yarn-project/pom.xml b/hadoop-yarn-project/pom.xml
-index d525d5a..79e5d54 100644
+index 8f117b2..ee95376 100644
 --- a/hadoop-yarn-project/pom.xml
 +++ b/hadoop-yarn-project/pom.xml
 @@ -51,8 +51,8 @@
