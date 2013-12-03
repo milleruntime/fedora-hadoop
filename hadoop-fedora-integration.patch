@@ -161,7 +161,7 @@ index 6059d8c..bba1a00 100644
      System.out.println("Running embedded servlet container at: http://" + host + ":" + port);
    }
 diff --git a/hadoop-common-project/hadoop-common/pom.xml b/hadoop-common-project/hadoop-common/pom.xml
-index 89691c6..37e73b5 100644
+index 89691c6..82458e7 100644
 --- a/hadoop-common-project/hadoop-common/pom.xml
 +++ b/hadoop-common-project/hadoop-common/pom.xml
 @@ -53,7 +53,7 @@
@@ -220,7 +220,7 @@ index 89691c6..37e73b5 100644
  
      <dependency>
        <groupId>com.sun.jersey</groupId>
-@@ -113,21 +136,26 @@
+@@ -113,21 +136,30 @@
        <artifactId>jersey-server</artifactId>
        <scope>compile</scope>
      </dependency>
@@ -229,41 +229,43 @@ index 89691c6..37e73b5 100644
 +      <artifactId>jersey-servlet</artifactId>
 +      <scope>compile</scope>
 +    </dependency>
++    <dependency>
++        <groupId>org.glassfish.web</groupId>
++        <artifactId>javax.servlet.jsp</artifactId>
++    </dependency>
  
      <dependency>
 -      <groupId>tomcat</groupId>
 -      <artifactId>jasper-compiler</artifactId>
--      <scope>runtime</scope>
-+      <groupId>org.glassfish.web</groupId>
-+      <artifactId>javax.servlet.jsp</artifactId>
-+      <version>2.2.6</version>
++      <groupId>org.apache.tomcat</groupId>
++      <artifactId>tomcat-jasper</artifactId>
+       <scope>runtime</scope>
      </dependency>
      <dependency>
 -      <groupId>tomcat</groupId>
 -      <artifactId>jasper-runtime</artifactId>
 -      <scope>runtime</scope>
-+      <groupId>org.apache.tomcat</groupId>
-+      <artifactId>tomcat-servlet-api</artifactId>
-+      <version>7.0.37</version>
++        <groupId>org.apache.tomcat</groupId>
++        <artifactId>tomcat-servlet-api</artifactId>
++        <version>7.0.37</version>
      </dependency>
      <dependency>
 -      <groupId>javax.servlet.jsp</groupId>
 -      <artifactId>jsp-api</artifactId>
 -      <scope>runtime</scope>
-+      <groupId>org.apache.tomcat</groupId>
-+      <artifactId>tomcat-el-api</artifactId>
-+      <version>7.0.37</version>
++        <groupId>org.apache.tomcat</groupId>
++        <artifactId>tomcat-el-api</artifactId>
++        <version>7.0.37</version>
      </dependency>
      <dependency>
        <groupId>commons-el</groupId>
-@@ -213,6 +241,11 @@
+@@ -213,6 +245,10 @@
        <groupId>com.jcraft</groupId>
        <artifactId>jsch</artifactId>
      </dependency>
 +    <dependency>
 +      <groupId>com.google.code.findbugs</groupId>
 +      <artifactId>jsr305</artifactId>
-+      <version>1.3.9</version>
 +    </dependency>
  
      <dependency>
@@ -1596,7 +1598,7 @@ index 4442281..44cf67e 100644
        throw new RuntimeException("It should never happen, " + ex.getMessage(), ex);
      }
 diff --git a/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml
-index 13872c3..c2ceab7 100644
+index 13872c3..38d2a14 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml
 +++ b/hadoop-hdfs-project/hadoop-hdfs-nfs/pom.xml
 @@ -85,12 +85,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -1615,20 +1617,30 @@ index 13872c3..c2ceab7 100644
        <artifactId>jetty-util</artifactId>
        <scope>compile</scope>
      </dependency>
-@@ -180,11 +180,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+@@ -135,8 +135,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+-      <groupId>javax.servlet.jsp</groupId>
+-      <artifactId>jsp-api</artifactId>
++      <groupId>org.glassfish.web</groupId>
++      <artifactId>javax.servlet.jsp</artifactId>
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+@@ -180,8 +180,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
        <scope>compile</scope>
      </dependency>
      <dependency>
 -      <groupId>tomcat</groupId>
 -      <artifactId>jasper-runtime</artifactId>
--      <scope>compile</scope>
--    </dependency>
--    <dependency>
-       <groupId>xmlenc</groupId>
-       <artifactId>xmlenc</artifactId>
++      <groupId>org.apache.tomcat</groupId>
++      <artifactId>tomcat-jasper</artifactId>
        <scope>compile</scope>
+     </dependency>
+     <dependency>
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs/pom.xml
-index f8f2918..fd43842 100644
+index f8f2918..b62015e 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/pom.xml
 +++ b/hadoop-hdfs-project/hadoop-hdfs/pom.xml
 @@ -71,12 +71,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -1671,19 +1683,18 @@ index f8f2918..fd43842 100644
        <groupId>junit</groupId>
        <artifactId>junit</artifactId>
        <scope>test</scope>
-@@ -166,11 +156,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+@@ -166,8 +156,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
        <scope>compile</scope>
      </dependency>
      <dependency>
 -      <groupId>tomcat</groupId>
 -      <artifactId>jasper-runtime</artifactId>
--      <scope>compile</scope>
--    </dependency>
--    <dependency>
-       <groupId>xmlenc</groupId>
-       <artifactId>xmlenc</artifactId>
++      <groupId>org.apache.tomcat</groupId>
++      <artifactId>tomcat-jasper</artifactId>
        <scope>compile</scope>
-@@ -192,101 +177,90 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     </dependency>
+     <dependency>
+@@ -192,101 +182,77 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
          </configuration>
        </plugin>
        <plugin>
@@ -1794,42 +1805,33 @@ index f8f2918..fd43842 100644
            </execution>
          </executions>
          <dependencies>
-+          <!-- volatile mix of glassfish 2.2 jspc impl & Tomcat's servlet 3.0 api
-+               EXERCISE CAUTION when messing with these
-+          -->
-+          <dependency>
-+            <groupId>org.glassfish.web</groupId>
-+            <artifactId>javax.servlet.jsp</artifactId>
-+            <version>2.2.5</version>
-+            <scope>runtime</scope>
-+          </dependency>
            <dependency>
 -            <groupId>org.codehaus.mojo.jspc</groupId>
 -            <artifactId>jspc-compiler-tomcat5</artifactId>
 -            <version>2.0-alpha-3</version>
-+            <groupId>org.apache.tomcat</groupId>
-+            <artifactId>tomcat-servlet-api</artifactId>
-+            <version>7.0.37</version>
-           </dependency>
-           <dependency>
+-          </dependency>
+-          <dependency>
 -            <groupId>org.slf4j</groupId>
 -            <artifactId>slf4j-log4j12</artifactId>
 -            <version>1.4.1</version>
-+            <groupId>org.apache.tomcat</groupId>
-+            <artifactId>tomcat-el-api</artifactId>
-+            <version>7.0.37</version>
-           </dependency>
-           <dependency>
+-          </dependency>
+-          <dependency>
 -            <groupId>org.slf4j</groupId>
 -            <artifactId>jcl104-over-slf4j</artifactId>
 -            <version>1.4.1</version>
 +            <groupId>org.apache.hadoop</groupId>
 +            <artifactId>hadoop-common</artifactId>
 +            <version>${project.version}</version>
++            <exclusions>
++              <exclusion>
++                <groupId>javax.servlet</groupId>
++                <artifactId>servlet-api</artifactId>
++               </exclusion>
++            </exclusions>
            </dependency>
          </dependencies>
        </plugin>
-@@ -329,7 +303,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
+@@ -329,7 +295,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
            </execution>
            <execution>
              <id>create-web-xmls</id>
@@ -2463,7 +2465,7 @@ index 11640d7..6290e72 100644
        </exclusions>
      </dependency>
 diff --git a/hadoop-project/pom.xml b/hadoop-project/pom.xml
-index b7a7456..abdf900 100644
+index b7a7456..0bee9b1 100644
 --- a/hadoop-project/pom.xml
 +++ b/hadoop-project/pom.xml
 @@ -63,7 +63,7 @@
@@ -2516,7 +2518,20 @@ index b7a7456..abdf900 100644
        </dependency>
  
        <dependency>
-@@ -404,12 +398,23 @@
+@@ -368,6 +362,12 @@
+       </dependency>
+ 
+       <dependency>
++        <groupId>org.glassfish.web</groupId>
++        <artifactId>javax.servlet.jsp</artifactId>
++        <version>2.2.6</version>
++      </dependency>
++
++      <dependency>
+         <groupId>org.codehaus.plexus</groupId>
+         <artifactId>plexus-utils</artifactId>
+         <version>2.0.5</version>
+@@ -404,12 +404,23 @@
          <artifactId>jersey-server</artifactId>
          <version>${jersey.version}</version>
        </dependency>
@@ -2540,54 +2555,50 @@ index b7a7456..abdf900 100644
  
        <dependency>
          <groupId>com.google.inject.extensions</groupId>
-@@ -448,34 +453,22 @@
+@@ -448,14 +459,9 @@
        </dependency>
  
        <dependency>
 -        <groupId>org.mortbay.jetty</groupId>
 -        <artifactId>jetty-servlet-tester</artifactId>
 -        <version>6.1.26</version>
+-      </dependency>
+-      <dependency>
+-        <groupId>tomcat</groupId>
+-        <artifactId>jasper-compiler</artifactId>
+-        <version>5.5.23</version>
++        <groupId>org.apache.tomcat</groupId>
++        <artifactId>tomcat-jasper</artifactId>
++        <version>7.0.37</version>
+         <exclusions>
+           <exclusion>
+             <groupId>javax.servlet</groupId>
+@@ -465,17 +471,16 @@
+             <groupId>ant</groupId>
+             <artifactId>ant</artifactId>
+           </exclusion>
++          <exclusion>
++             <groupId>org.eclipse.jdt.core.compiler</groupId>
++             <artifactId>ecj</artifactId>
++          </exclusion>
+         </exclusions>
+       </dependency>
+       <dependency>
+-        <groupId>tomcat</groupId>
+-        <artifactId>jasper-runtime</artifactId>
+-        <version>5.5.23</version>
+-      </dependency>
+-      <dependency>
+-        <groupId>javax.servlet.jsp</groupId>
+-        <artifactId>jsp-api</artifactId>
+-        <version>2.1</version>
 +        <groupId>org.eclipse.jetty</groupId>
 +        <artifactId>test-jetty-servlet</artifactId>
 +        <version>9.0.4.v20130625</version>
        </dependency>
-+      <!-- volatile mix of glassfish 2.2 jspc & Tomcat's servlet 3.0 api
-+           EXERCISE CAUTION when messing with these
-+      -->
-       <dependency>
--        <groupId>tomcat</groupId>
--        <artifactId>jasper-compiler</artifactId>
--        <version>5.5.23</version>
--        <exclusions>
--          <exclusion>
--            <groupId>javax.servlet</groupId>
--            <artifactId>jsp-api</artifactId>
--          </exclusion>
--          <exclusion>
--            <groupId>ant</groupId>
--            <artifactId>ant</artifactId>
--          </exclusion>
--        </exclusions>
--      </dependency>
--      <dependency>
--        <groupId>tomcat</groupId>
--        <artifactId>jasper-runtime</artifactId>
--        <version>5.5.23</version>
-+        <groupId>org.glassfish.web</groupId>
-+        <artifactId>javax.servlet.jsp</artifactId>
-+        <version>2.2.5</version>
-       </dependency>
-       <dependency>
--        <groupId>javax.servlet.jsp</groupId>
--        <artifactId>jsp-api</artifactId>
--        <version>2.1</version>
-+        <groupId>org.apache.tomcat</groupId>
-+        <artifactId>tomcat-servlet-api</artifactId>
-+        <version>7.0.37</version>
-       </dependency>
        <dependency>
          <groupId>commons-el</groupId>
-@@ -483,6 +476,11 @@
+@@ -483,6 +488,11 @@
          <version>1.0</version>
        </dependency>
        <dependency>
@@ -2599,7 +2610,7 @@ index b7a7456..abdf900 100644
          <groupId>commons-logging</groupId>
          <artifactId>commons-logging</artifactId>
          <version>1.1.1</version>
-@@ -536,7 +534,7 @@
+@@ -536,7 +546,7 @@
        <dependency>
          <groupId>net.java.dev.jets3t</groupId>
          <artifactId>jets3t</artifactId>
@@ -2608,7 +2619,7 @@ index b7a7456..abdf900 100644
        </dependency>
        <dependency>
          <groupId>org.apache.mina</groupId>
-@@ -704,7 +702,7 @@
+@@ -704,7 +714,7 @@
        <dependency>
          <groupId>org.apache.bookkeeper</groupId>
          <artifactId>bookkeeper-server</artifactId>
@@ -2617,7 +2628,19 @@ index b7a7456..abdf900 100644
          <scope>compile</scope>
        </dependency>
        <dependency>
-@@ -797,9 +795,9 @@
+@@ -712,6 +722,11 @@
+         <artifactId>hsqldb</artifactId>
+         <version>2.0.0</version>
+       </dependency>
++      <dependency>
++        <groupId>com.google.code.findbugs</groupId>
++        <artifactId>jsr305</artifactId>
++        <version>1.3.9</version>
++      </dependency>
+     </dependencies>
+   </dependencyManagement>
+ 
+@@ -797,9 +812,9 @@
            <version>${avro.version}</version>
          </plugin>
          <plugin>
