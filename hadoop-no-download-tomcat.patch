@@ -1,8 +1,8 @@
 diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
-index 5614d02..a513541 100644
+index 72f3b7b..1d99c76 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
 +++ b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
-@@ -515,50 +515,6 @@
+@@ -523,50 +523,6 @@
              <artifactId>maven-antrun-plugin</artifactId>
              <executions>
                <execution>

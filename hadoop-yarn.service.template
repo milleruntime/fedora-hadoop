@@ -12,7 +12,9 @@ ExecStop=/usr/sbin/yarn-daemon.sh stop DAEMON
 User=yarn
 Group=yarn
 PIDFile=/var/run/hadoop-yarn/yarn-yarn-DAEMON.pid
-ControlGroup=cpu:/hadoop memory:/hadoop
+LimitNOFILE=32768
+LimitNPROC=65536
+#ControlGroup=cpu:/hadoop memory:/hadoop
 
 [Install]
 WantedBy=multi-user.target

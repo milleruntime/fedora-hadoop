@@ -1,3 +1,15 @@
+diff --git a/hadoop-common-project/hadoop-common/src/CMakeLists.txt b/hadoop-common-project/hadoop-common/src/CMakeLists.txt
+index bf8ac7b..76e125c 100644
+--- a/hadoop-common-project/hadoop-common/src/CMakeLists.txt
++++ b/hadoop-common-project/hadoop-common/src/CMakeLists.txt
+@@ -202,7 +202,6 @@ ENDIF()
+ 
+ target_link_dual_libraries(hadoop
+     ${LIB_DL}
+-    ${JAVA_JVM_LIBRARY}
+ )
+ SET(LIBHADOOP_VERSION "1.0.0")
+ SET_TARGET_PROPERTIES(hadoop PROPERTIES
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt b/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
 index 5652892..9177e08 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
@@ -10,6 +22,18 @@ index 5652892..9177e08 100644
      dl
      pthread
  )
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/native/fuse-dfs/CMakeLists.txt b/hadoop-hdfs-project/hadoop-hdfs/src/main/native/fuse-dfs/CMakeLists.txt
+index dd3f1e6..68ba422 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/native/fuse-dfs/CMakeLists.txt
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/native/fuse-dfs/CMakeLists.txt
+@@ -68,7 +68,6 @@ IF(FUSE_FOUND)
+     )
+     target_link_libraries(fuse_dfs
+         ${FUSE_LIBRARIES}
+-        ${JAVA_JVM_LIBRARY}
+         hdfs
+         m
+         pthread
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/jni_helper.c b/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/jni_helper.c
 index c768c9c..1079a6c 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/jni_helper.c
