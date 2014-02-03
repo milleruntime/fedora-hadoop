@@ -21,7 +21,7 @@
 
 Name:   hadoop
 Version: 2.2.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -40,6 +40,7 @@ Source10: hadoop-mapred-site.xml
 Source11: hadoop-yarn-site.xml
 Source12: hadoop-httpfs.sysconfig
 Source13: hdfs-create-dirs
+Source14: hadoop-tomcat-users.xml
 # This patch includes the following upstream tickets:
 # https://issues.apache.org/jira/browse/HADOOP-9594
 # https://issues.apache.org/jira/browse/MAPREDUCE-5431
@@ -161,7 +162,7 @@ BuildRequires: maven-surefire-plugin
 BuildRequires: maven-war-plugin
 BuildRequires: mockito
 BuildRequires: native-maven-plugin
-%if %{fedora} < 21
+%if 0%{fedora} < 21
 BuildRequires: netty
 %else
 BuildRequires: netty3
@@ -185,7 +186,11 @@ BuildRequires: txw2
 BuildRequires: which
 BuildRequires: xmlenc
 BuildRequires: znerd-oss-parent
+%if 0%{fedora} < 21
 BuildRequires: zookeeper-java
+%else
+BuildRequires: zookeeper-java > 3.4.5-15
+%endif
 
 # For tests
 BuildRequires: jersey-test-framework
@@ -333,6 +338,7 @@ Group: Applications/System
 BuildArch: noarch
 Requires: apache-commons-dbcp
 Requires: ecj >= 1:4.2.1-6
+Requires: json_simple
 Requires: tomcat
 Requires: tomcat-lib
 Requires: tomcat-native
@@ -471,11 +477,12 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %if %{package_libhdfs}
 %patch5 -p1
 %endif
-%if %{fedora} >= 21
+%if 0%{fedora} >= 21
 %patch6 -p1
 %patch7 -p1
 %endif
 
+%if 0%{fedora} < 21
 # The hadoop test suite needs classes from the zookeeper test suite.
 # We need to modify the deps to use the pom for the zookeeper-test jar
 %pom_xpath_set "pom:project/pom:dependencies/pom:dependency[pom:artifactId='zookeeper' and pom:scope='test']/pom:artifactId" zookeeper-test hadoop-common-project/hadoop-common
@@ -510,6 +517,7 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
         </exclusion>
       </exclusions>
 " hadoop-hdfs-project/hadoop-hdfs-nfs
+%endif
 
 # Remove the maven-site-plugin.  It's not needed
 %pom_remove_plugin :maven-site-plugin
@@ -570,7 +578,7 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %mvn_package :%{name}-yarn*::{}: %{name}-yarn
 
 # Jar files that need to be overridden due to installation location
-%if %{fedora} < 21
+%if 0%{fedora} < 21
 # Workaround for bz1023116
 #%%mvn_file :%{name}-common::{}: %{_jnidir}/%{name}-common %{_datadir}/%{name}/common/%{name}-common
 %mvn_file :%{name}-common::{}: %{_jnidir}/%{name}/%{name}-common
@@ -749,10 +757,11 @@ popd
 for f in catalina.policy catalina.properties context.xml log4j.properties \
          tomcat.conf web.xml;
 do
-  cp %{_sysconfdir}/tomcat/$f %{buildroot}/%{_sysconfdir}/%{name}/tomcat
+  cp -a %{_sysconfdir}/tomcat/$f %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 done
 
-install -m 644 %{name}-hdfs-project/%{name}-hdfs-httpfs/src/main/tomcat/*.* %{buildroot}/%{_sysconfdir}/%{name}/tomcat
+install -m 660 %{SOURCE14} %{buildroot}/%{_sysconfdir}/%{name}/tomcat/tomcat-users.xml
+install -m 664 %{name}-hdfs-project/%{name}-hdfs-httpfs/src/main/tomcat/*.* %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 
 # Copy the httpfs webapp
 cp -arf %{name}-hdfs-project/%{name}-hdfs-httpfs/target/webhdfs %{buildroot}/%{_datadir}/%{name}/httpfs/tomcat/webapps
@@ -1007,7 +1016,7 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Apache Hadoop Yarn
 %config(noreplace) %{_sysconfdir}/%{name}/httpfs-log4j.properties
 %config(noreplace) %{_sysconfdir}/%{name}/httpfs-signature.secret
 %config(noreplace) %{_sysconfdir}/%{name}/httpfs-site.xml
-%config(noreplace) %{_sysconfdir}/%{name}/tomcat/*.*
+%attr(-,tomcat,tomcat) %config(noreplace) %{_sysconfdir}/%{name}/tomcat/*.*
 %attr(0775,root,tomcat) %dir %{_sysconfdir}/%{name}/tomcat
 %attr(0775,root,tomcat) %dir %{_sysconfdir}/%{name}/tomcat/Catalina
 %attr(0775,root,tomcat) %dir %{_sysconfdir}/%{name}/tomcat/Catalina/localhost
@@ -1081,6 +1090,13 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Apache Hadoop Yarn
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Mon Feb  3 2014 Robert Rati <rrati@redhat> - 2.2.0-5
+- Added json_simple dependency to httpfs package
+- Added default tomcat-users file
+- Fixed up file permissions and ownership for tomcat configuration
+- Conditionalize the zookeeper-test modes to < F21
+- Additional fix for netty3 compat package for >F20
+
 * Fri Jan 24 2014 Robert Rati <rrati@redhat> - 2.2.0-4
 - Fixed 2 packages providing hadoop-yarn-server-tests (BZ1056521)
 - Package httpfs bits using tomcat@ service
