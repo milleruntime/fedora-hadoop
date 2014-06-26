@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -57,12 +57,14 @@ Patch3: %{name}-maven.patch
 Patch4: %{name}-no-download-tomcat.patch
 # Use dlopen to find libjvm.so
 Patch5: %{name}-dlopen-libjvm.patch
-# Update to Guava 15.0
-Patch7: %{name}-guava-15.0.patch
+# Update to Guava 17.0
+Patch7: %{name}-guava.patch
 # Update to Netty 3.6.6-Final
 Patch8: %{name}-netty-3.6.6-Final.patch
 # Remove problematic issues with tools.jar
 Patch9: %{name}-tools.jar.patch
+# Workaround for bz1012059
+Patch10: %{name}-build.patch
 # The native bits don't compile on ARM
 ExcludeArch: %{arm}
 
@@ -485,6 +487,7 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %patch8 -p1
 %endif
 %patch9 -p1
+%patch10 -p1
 
 %if 0%{?fedora} < 21
 # The hadoop test suite needs classes from the zookeeper test suite.
@@ -558,8 +561,8 @@ rm -f hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-test
 # Fix scope on hadoop-common:test-jar
 %pom_xpath_set "pom:project/pom:dependencies/pom:dependency[pom:artifactId='hadoop-common' and pom:type='test-jar']/pom:scope" test hadoop-tools/hadoop-openstack
 
-# Modify asm version to compat library version 3.3.6
-#%%pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:version" 3.3.6 hadoop-project
+# Modify asm version to version 5.0.2
+%pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:version" 5.0.2 hadoop-project
 
 # War files we don't want
 %mvn_package :%{name}-auth-examples __noinstall
@@ -677,12 +680,12 @@ install -d -m 0755 %{buildroot}/%{_datadir}/%{name}/hdfs/webapps
 install -d -m 0755 %{buildroot}/%{_datadir}/%{name}/httpfs/tomcat/webapps
 install -d -m 0755 %{buildroot}/%{_datadir}/%{name}/mapreduce/lib
 install -d -m 0755 %{buildroot}/%{_datadir}/%{name}/yarn/lib
-install -d -m 0755 %{buildroot}/%{_sharedstatedir}/tomcats/httpfs
 install -d -m 0755 %{buildroot}/%{_sysconfdir}/%{name}/tomcat/Catalina/localhost
 install -d -m 0755 %{buildroot}/%{_sysconfdir}/logrotate.d
 install -d -m 0755 %{buildroot}/%{_sysconfdir}/sysconfig
 install -d -m 0755 %{buildroot}/%{_tmpfilesdir}
-install -d -m 0755 %{buildroot}/%{_var}/lib/%{name}-hdfs
+install -d -m 0755 %{buildroot}/%{_sharedstatedir}/%{name}-hdfs
+install -d -m 0755 %{buildroot}/%{_sharedstatedir}/tomcats/httpfs
 install -d -m 0755 %{buildroot}/%{_var}/cache/%{name}-yarn
 install -d -m 0755 %{buildroot}/%{_var}/cache/%{name}-httpfs/temp
 install -d -m 0755 %{buildroot}/%{_var}/cache/%{name}-httpfs/work
@@ -740,9 +743,13 @@ sed -i "s|\(HADOOP_OPTS.*=.*\)\$HADOOP_CLIENT_OPTS|\1 -Djavax.xml.parsers.Docume
 echo "export YARN_OPTS=\"\$YARN_OPTS -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl\"" >> %{buildroot}/%{_sysconfdir}/%{name}/yarn-env.sh
 
 # Workaround for bz1012059
-install -pm 644 %{name}-project-dist/target/%{name}-project-dist-%{hadoop_version}.jar %{buildroot}/%{_javadir}/%{name}/%{name}-project-dist.jar
 install -pm 644 hadoop-project-dist/pom.xml %{buildroot}/%{_mavenpomdir}/JPP.%{name}-%{name}-project-dist.pom
-%add_maven_depmap JPP.%{name}-%{name}-project-dist.pom %{name}/%{name}-project-dist.jar
+%{__ln_s} %{_jnidir}/%{name}/hadoop-common.jar %{buildroot}/%{_datadir}/%{name}/common
+#echo %{_datadir}/%{name}/common/hadoop-common.jar >> .mfiles
+%{__ln_s} %{_javadir}/%{name}/hadoop-hdfs.jar %{buildroot}/%{_datadir}/%{name}/hdfs
+echo %{_datadir}/%{name}/hdfs/hadoop-hdfs.jar >> .mfiles-%{name}-hdfs
+%{__ln_s} %{_javadir}/%{name}/hadoop-client.jar %{buildroot}/%{_datadir}/%{name}/client
+echo %{_datadir}/%{name}/client/hadoop-client.jar >> .mfiles-%{name}-client
 
 # client jar depenencies
 copy_dep_jars %{name}-client/target/%{name}-client-%{hadoop_version}/share/%{name}/client/lib %{buildroot}/%{_datadir}/%{name}/client/lib
@@ -764,7 +771,7 @@ for f in `ls %{buildroot}/%{_datadir}/%{name}/common/*.jar`
 do
   echo "$f" | sed "s|%{buildroot}||" >> .mfiles
 done
-pushd  $basedir/share/%{name}/common/lib
+pushd $basedir/share/%{name}/common/lib
   link_hadoop_jars %{buildroot}/%{_datadir}/%{name}/common/lib
 popd
 
@@ -923,7 +930,7 @@ getent group hadoop >/dev/null || groupadd -r hadoop
 
 %pre hdfs
 getent group hdfs >/dev/null || groupadd -r hdfs
-getent passwd hdfs >/dev/null || /usr/sbin/useradd --comment "Apache Hadoop HDFS" --shell /sbin/nologin -M -r -g hdfs -G hadoop --home %{_var}/lib/%{name}-hdfs hdfs
+getent passwd hdfs >/dev/null || /usr/sbin/useradd --comment "Apache Hadoop HDFS" --shell /sbin/nologin -M -r -g hdfs -G hadoop --home %{_sharedstatedir}/%{name}-hdfs hdfs
 
 %pre mapreduce
 getent group mapred >/dev/null || groupadd -r mapred
@@ -945,12 +952,10 @@ getent passwd yarn >/dev/null || /usr/sbin/useradd --comment "Apache Hadoop Yarn
 %post common-native -p /sbin/ldconfig
 
 %post hdfs
-%systemd_post %{hdfs_services}
-
 # Change the home directory for the hdfs user
-if [[ `getent passwd hdfs | cut -d: -f 6` != "%{_var}/lib/%{name}-hdfs" ]]
+if [[ `getent passwd hdfs | cut -d: -f 6` != "%{_sharedstatedir}/%{name}-hdfs" ]]
 then
-  /usr/sbin/usermod -d %{_var}/lib/%{name}-hdfs hdfs
+  /usr/sbin/usermod -d %{_sharedstatedir}/%{name}-hdfs hdfs
 fi
 
 if [ $1 -gt 1 ]
@@ -958,9 +963,10 @@ then
   if [ -d %{_var}/cache/%{name}-hdfs ] && [ ! -L %{_var}/cache/%{name}-hdfs ]
   then
     # Move the existing hdfs data to the new location
-    mv -f %{_var}/cache/%{name}-hdfs/* %{_var}/lib/%{name}-hdfs/
+    mv -f %{_var}/cache/%{name}-hdfs/* %{_sharedstatedir}/%{name}-hdfs/
   fi
 fi
+%systemd_post %{hdfs_services}
 
 %if %{package_libhdfs}
 %post -n libhdfs -p /sbin/ldconfig
@@ -977,8 +983,11 @@ fi
 %postun hdfs
 %systemd_postun_with_restart %{hdfs_services}
 
-# Remove the compatibility symlink
-rm -f %{_var}/cache/%{name}-hdfs
+if [ $1 -lt 1 ]
+then
+  # Remove the compatibility symlink
+  rm -f %{_var}/cache/%{name}-hdfs
+fi
 
 %if %{package_libhdfs}
 %postun -n libhdfs -p /sbin/ldconfig
@@ -994,9 +1003,9 @@ rm -f %{_var}/cache/%{name}-hdfs
 # Create a symlink to the new location for hdfs data in case the user changed
 # the configuration file and the new one isn't in place to point to the
 # correct location
-if [ ! -f %{_var}/cache/%{name}-hdfs ]
+if [ ! -e %{_var}/cache/%{name}-hdfs ]
 then
-  %{__ln_s} %{_var}/lib/%{name}-hdfs %{_var}/cache
+  %{__ln_s} %{_sharedstatedir}/%{name}-hdfs %{_var}/cache
 fi
 
 %files -f .mfiles-%{name}-client client
@@ -1019,6 +1028,10 @@ fi
 %{_datadir}/%{name}/common/lib
 %{_libexecdir}/%{name}-config.sh
 %{_libexecdir}/%{name}-layout.sh
+
+# Workaround for bz1012059
+%{_mavenpomdir}/JPP.%{name}-%{name}-project-dist.pom
+
 %{_bindir}/%{name}
 %{_sbindir}/%{name}-daemon.sh
 %{_sbindir}/%{name}-daemons.sh
@@ -1042,10 +1055,8 @@ fi
 %endif
 
 %files -f .mfiles-%{name}-hdfs hdfs
-%exclude %{_datadir}/%{name}/client
 %config(noreplace) %{_sysconfdir}/%{name}/hdfs-site.xml
 %{_datadir}/%{name}/hdfs
-%attr(-,hdfs,hadoop) %{_sharedstatedir}/%{name}-hdfs
 %{_unitdir}/%{name}-datanode.service
 %{_unitdir}/%{name}-namenode.service
 %{_unitdir}/%{name}-journalnode.service
@@ -1060,7 +1071,7 @@ fi
 %config(noreplace) %attr(644, root, root) %{_sysconfdir}/logrotate.d/%{name}-hdfs
 %attr(0755,hdfs,hadoop) %dir %{_var}/run/%{name}-hdfs
 %attr(0755,hdfs,hadoop) %dir %{_var}/log/%{name}-hdfs
-%attr(0755,hdfs,hadoop) %dir %{_var}/lib/%{name}-hdfs
+%attr(0755,hdfs,hadoop) %dir %{_sharedstatedir}/%{name}-hdfs
 
 %if %{package_libhdfs}
 %files hdfs-fuse
@@ -1099,7 +1110,6 @@ fi
 %endif
 
 %files -f .mfiles-%{name}-mapreduce mapreduce
-%exclude %{_datadir}/%{name}/client
 %config(noreplace) %{_sysconfdir}/%{name}/mapred-env.sh
 %config(noreplace) %{_sysconfdir}/%{name}/mapred-queues.xml.template
 %config(noreplace) %{_sysconfdir}/%{name}/mapred-site.xml
@@ -1123,7 +1133,6 @@ fi
 %files -f .mfiles-%{name}-tests tests
 
 %files -f .mfiles-%{name}-yarn yarn
-%exclude %{_datadir}/%{name}/client
 %config(noreplace) %{_sysconfdir}/%{name}/capacity-scheduler.xml
 %config(noreplace) %{_sysconfdir}/%{name}/yarn-env.sh
 %config(noreplace) %{_sysconfdir}/%{name}/yarn-site.xml
@@ -1150,6 +1159,10 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Thu Jun 26 2014 Robert Rati <rrati@redhat> - 2.4.0-3
+- Fixed FTBFS (#1106748)
+- Update to build with guava 17.0
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.4.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
