@@ -7,7 +7,7 @@
 %global package_libhdfs 0
 %endif
 
-%global commit 9d04888c2ca6ffc0d11e5fd894e3fa567398214a
+%global commit 9e2ef43a240fb0f603d8c384e501daec11524510
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 %global hadoop_version %{version}
@@ -22,8 +22,8 @@
 %bcond_with javadoc
 
 Name:   hadoop
-Version: 2.4.0
-Release: 3%{?dist}
+Version: 2.4.1
+Release: 1%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -171,11 +171,7 @@ BuildRequires: netty
 %else
 BuildRequires: netty3
 %endif
-%if 0%{?fedora} > 20
-BuildRequires: objectweb-asm3
-%else
 BuildRequires: objectweb-asm
-%endif
 BuildRequires: objenesis >= 1.2-16
 BuildRequires: openssl-devel
 BuildRequires: paranamer
@@ -259,11 +255,7 @@ Requires: jetty8
 Requires: jsr-311
 Requires: mockito
 Requires: nc6
-%if 0%{?fedora} > 20
-Requires: objectweb-asm3
-%else
 Requires: objectweb-asm
-%endif
 Requires: objenesis
 Requires: paranamer
 Requires: relaxngDatatype
@@ -561,8 +553,11 @@ rm -f hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-test
 # Fix scope on hadoop-common:test-jar
 %pom_xpath_set "pom:project/pom:dependencies/pom:dependency[pom:artifactId='hadoop-common' and pom:type='test-jar']/pom:scope" test hadoop-tools/hadoop-openstack
 
-# Modify asm version to version 5.0.2
+%if 0%{?fedora} > 20
+# Modify asm version to version 5.0.2 and groupId to org.ow2.asm
 %pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:version" 5.0.2 hadoop-project
+%pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:groupId" org.ow2.asm hadoop-project
+%endif
 
 # War files we don't want
 %mvn_package :%{name}-auth-examples __noinstall
@@ -621,31 +616,6 @@ copy_dep_jars()
 {
   find $1 ! -name "hadoop-*.jar" -name "*.jar" | xargs install -m 0644 -t $2
   rm -f $2/tools-*.jar
-}
-
-# Create a pom file for a test jar
-# $1 what the test jar is associated with
-create_test_pom()
-{
-  dep=`echo $1 | sed "s/-tests//g"`
-  pom="JPP.%{name}-$1.pom"
-  cat > %{buildroot}%{_mavenpomdir}/$pom << EOL
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.hadoop</groupId>
-  <artifactId>$1</artifactId>
-  <version>%{hadoop_version}</version>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>$dep</artifactId>
-      <version>%{hadoop_version}</version>
-    </dependency>
-  </dependencies>
-</project>
-EOL
-  %add_maven_depmap -f %{name}-tests $pom %{name}/$1.jar
 }
 
 # Create symlinks for jars from the build
@@ -745,11 +715,8 @@ echo "export YARN_OPTS=\"\$YARN_OPTS -Djavax.xml.parsers.DocumentBuilderFactory=
 # Workaround for bz1012059
 install -pm 644 hadoop-project-dist/pom.xml %{buildroot}/%{_mavenpomdir}/JPP.%{name}-%{name}-project-dist.pom
 %{__ln_s} %{_jnidir}/%{name}/hadoop-common.jar %{buildroot}/%{_datadir}/%{name}/common
-#echo %{_datadir}/%{name}/common/hadoop-common.jar >> .mfiles
 %{__ln_s} %{_javadir}/%{name}/hadoop-hdfs.jar %{buildroot}/%{_datadir}/%{name}/hdfs
-echo %{_datadir}/%{name}/hdfs/hadoop-hdfs.jar >> .mfiles-%{name}-hdfs
 %{__ln_s} %{_javadir}/%{name}/hadoop-client.jar %{buildroot}/%{_datadir}/%{name}/client
-echo %{_datadir}/%{name}/client/hadoop-client.jar >> .mfiles-%{name}-client
 
 # client jar depenencies
 copy_dep_jars %{name}-client/target/%{name}-client-%{hadoop_version}/share/%{name}/client/lib %{buildroot}/%{_datadir}/%{name}/client/lib
@@ -908,15 +875,6 @@ sed -i "s|{|%{_var}/log/hadoop-hdfs/*.audit\n{|" %{buildroot}/%{_sysconfdir}/log
 
 # hdfs init script
 install -m 755 %{SOURCE13} %{buildroot}/%{_sbindir}
-
-# pom files for test jars
-for f in `ls %{buildroot}/%{_javadir}/%{name}/%{name}-*-tests.jar %{buildroot}/%{_jnidir}/%{name}-*-tests.jar | grep -v yarn-server-tests`
-do
-  create_test_pom $(basename $f | sed "s/.jar//g")
-done
-
-install -m 0644 hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-tests/pom.xml %{buildroot}/%{_mavenpomdir}/JPP.%{name}-%{name}-yarn-server-tests-tests.pom
-%add_maven_depmap -f %{name}-tests JPP.%{name}-%{name}-yarn-server-tests-tests.pom %{name}/%{name}-yarn-server-tests-tests.jar
 
 %pretrans -p <lua> hdfs
 path = "%{_datadir}/%{name}/hdfs/webapps"
@@ -1159,6 +1117,10 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Tue Jul 15 2014 Robert Rati <rrati@redhat> - 2.4.1-1
+- Update to upstream release 2.4.1
+- Fixed resolution of test jars
+
 * Thu Jun 26 2014 Robert Rati <rrati@redhat> - 2.4.0-3
 - Fixed FTBFS (#1106748)
 - Update to build with guava 17.0
