@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -80,6 +80,7 @@ BuildRequires: antlr-tool
 BuildRequires: aopalliance
 BuildRequires: apache-commons-beanutils
 BuildRequires: apache-commons-cli
+BuildRequires: apache-commons-codec
 BuildRequires: apache-commons-collections
 BuildRequires: apache-commons-configuration
 BuildRequires: apache-commons-daemon
@@ -99,8 +100,6 @@ BuildRequires: cglib
 BuildRequires: checkstyle
 BuildRequires: chrpath
 BuildRequires: cmake
-BuildRequires: commons-codec
-BuildRequires: commons-httpclient
 BuildRequires: ecj >= 1:4.2.1-6
 BuildRequires: fuse-devel
 BuildRequires: fusesource-pom
@@ -120,6 +119,7 @@ BuildRequires: httpcomponents-client
 BuildRequires: httpcomponents-core
 BuildRequires: istack-commons
 BuildRequires: jackson
+BuildRequires: jakarta-commons-httpclient
 BuildRequires: java-base64
 BuildRequires: java-devel
 BuildRequires: java-xmlbuilder
@@ -242,13 +242,13 @@ Requires: apache-commons-beanutils
 Requires: avalon-framework
 Requires: avalon-logkit
 Requires: checkstyle
-Requires: commons-httpclient
 Requires: coreutils
 Requires: geronimo-jms
 Requires: glassfish-jaxb
 Requires: glassfish-jsp
 Requires: glassfish-jsp-api
 Requires: istack-commons
+Requires: jakarta-commons-httpclient
 Requires: java-base64
 Requires: java-xmlbuilder
 Requires: javamail
@@ -1124,6 +1124,10 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Mon Oct 27 2014 Robert Rati <rrati@redhat> - 2.4.1-6
+- Changed commons-httpclient BR/R to jakarta-commons-httpclient
+- Changed commons-codec BR to apache-commons-codec
+
 * Fri Oct 10 2014 Dan Horák <dan[at]danny.cz> - 2.4.1-5
 - fix OOM during build on s390x and ppc64le (#1149295)
 - fix Java detection on ppc64le
