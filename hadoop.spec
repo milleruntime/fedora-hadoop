@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -60,7 +60,7 @@ Patch5: %{name}-dlopen-libjvm.patch
 # Update to Guava 17.0
 Patch7: %{name}-guava.patch
 # Update to Netty 3.6.6-Final
-Patch8: %{name}-netty-3.6.6-Final.patch
+Patch8: %{name}-netty-3-Final.patch
 # Remove problematic issues with tools.jar
 Patch9: %{name}-tools.jar.patch
 # Workaround for bz1012059
@@ -1124,6 +1124,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Sun Feb 15 2015 Peter Robinson <pbrobinson@fedoraproject.org> 2.4.1-7
+- Update netty3 patch for 3.9.3
+
 * Mon Oct 27 2014 Robert Rati <rrati@redhat> - 2.4.1-6
 - Changed commons-httpclient BR/R to jakarta-commons-httpclient
 - Changed commons-codec BR to apache-commons-codec

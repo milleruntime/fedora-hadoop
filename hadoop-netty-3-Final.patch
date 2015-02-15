@@ -12,7 +12,7 @@ index 9b267fe..0ce916d 100644
          <groupId>org.jboss.netty</groupId>
          <artifactId>netty</artifactId>
 -        <version>3.2.4.Final</version>
-+        <version>3.6.6.Final</version>
++        <version>3.9.3.Final</version>
        </dependency>
      </dependencies>
    </dependencyManagement>
@@ -25,7 +25,7 @@ index b315e2b..a9da3aa 100644
          <groupId>io.netty</groupId>
          <artifactId>netty</artifactId>
 -        <version>3.6.2.Final</version>
-+        <version>3.6.6.Final</version>
++        <version>3.9.3.Final</version>
        </dependency>
  
        <dependency>
