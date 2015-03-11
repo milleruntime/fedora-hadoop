@@ -139,6 +139,7 @@ BuildRequires: jsr-311
 BuildRequires: junit
 BuildRequires: jzlib
 BuildRequires: leveldbjni
+BuildRequires: groovy18
 %if 0%{?fedora} < 21
 BuildRequires: log4j
 %else
@@ -1124,6 +1125,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Wed Mar 11 2015 Swapnil Kulkarni <coolsvap@gmail.com> 2.4.1-7
+- Added groovy18 dependency
+
 * Sun Feb 15 2015 Peter Robinson <pbrobinson@fedoraproject.org> 2.4.1-7
 - Update netty3 patch for 3.9.3
 
