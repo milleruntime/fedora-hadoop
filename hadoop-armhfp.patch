@@ -1,0 +1,34 @@
+--- hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/JNIFlags.cmake.orig	2014-07-20 15:03:30.473576587 +0100
++++ hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/JNIFlags.cmake	2014-07-20 15:06:13.811115845 +0100
+@@ -45,22 +45,22 @@
+             OUTPUT_VARIABLE JVM_ELF_ARCH
+             ERROR_QUIET)
+         if (NOT JVM_ELF_ARCH MATCHES "Tag_ABI_VFP_args: VFP registers")
+-            message("Soft-float JVM detected")
++            message("Hard-float JVM detected")
+ 
+-            # Test compilation with -mfloat-abi=softfp using an arbitrary libc function
++            # Test compilation with -mfloat-abi=hard using an arbitrary libc function
+             # (typically fails with "fatal error: bits/predefs.h: No such file or directory"
+-            # if soft-float dev libraries are not installed)
++            # if hard-float dev libraries are not installed)
+             include(CMakePushCheckState)
+             cmake_push_check_state()
+-            set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -mfloat-abi=softfp")
++            set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -mfloat-abi=hard")
+             include(CheckSymbolExists)
+-            check_symbol_exists(exit stdlib.h SOFTFP_AVAILABLE)
+-            if (NOT SOFTFP_AVAILABLE)
+-                message(FATAL_ERROR "Soft-float dev libraries required (e.g. 'apt-get install libc6-dev-armel' on Debian/Ubuntu)")
+-            endif (NOT SOFTFP_AVAILABLE)
++            check_symbol_exists(exit stdlib.h HARDFP_AVAILABLE)
++            if (NOT HARDFP_AVAILABLE)
++                message(FATAL_ERROR "Hard-float dev libraries required (e.g. 'apt-get install libc6-dev-armel' on Debian/Ubuntu)")
++            endif (NOT HARDFP_AVAILABLE)
+             cmake_pop_check_state()
+ 
+-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfloat-abi=softfp")
++            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfloat-abi=hard")
+         endif ()
+     endif (READELF MATCHES "NOTFOUND")
+ endif (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" AND CMAKE_SYSTEM_NAME STREQUAL "Linux")

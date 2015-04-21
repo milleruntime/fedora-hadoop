@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 7%{?dist}
+Release: 8%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -67,8 +67,8 @@ Patch9: %{name}-tools.jar.patch
 Patch10: %{name}-build.patch
 # Fix Java detection on ppc64le
 Patch11: %{name}-2.4.1-cmake-java-ppc64le.patch
-# The native bits don't compile on ARM
-ExcludeArch: %{arm}
+# Build with hard-float on ARMv7
+Patch12: %{name}-armhfp.patch
 
 # This is not a real BR, but is here because of rawhide shift to eclipse
 # aether packages which caused a dependency of a dependency to not get
@@ -484,6 +484,7 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 %if 0%{?fedora} < 21
 # The hadoop test suite needs classes from the zookeeper test suite.
@@ -1125,6 +1126,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Tue Apr 21 2015 Peter Robinson <pbrobinson@fedoraproject.org> 2.4.1-8
+- Fix building on ARMv7
+
 * Wed Mar 11 2015 Swapnil Kulkarni <coolsvap@gmail.com> 2.4.1-7
 - Added groovy18 dependency
 
