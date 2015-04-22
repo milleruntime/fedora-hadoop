@@ -158,7 +158,6 @@ BuildRequires: maven-invoker-plugin
 BuildRequires: maven-javadoc-plugin
 BuildRequires: maven-local
 BuildRequires: maven-plugin-build-helper
-BuildRequires: maven-plugin-cobertura
 BuildRequires: maven-plugin-exec
 BuildRequires: maven-plugin-plugin
 BuildRequires: maven-release-plugin
@@ -187,11 +186,11 @@ BuildRequires: snappy-devel
 BuildRequires: snappy-java
 BuildRequires: systemd
 BuildRequires: tomcat
-BuildRequires: tomcat-el-2.2-api
+BuildRequires: tomcat-el-3.0-api
 %if 0%{?fedora} > 20
 BuildRequires: tomcat-log4j
 %endif
-BuildRequires: tomcat-servlet-3.0-api
+BuildRequires: tomcat-servlet-3.1-api
 BuildRequires: txw2
 BuildRequires: which
 BuildRequires: xmlenc

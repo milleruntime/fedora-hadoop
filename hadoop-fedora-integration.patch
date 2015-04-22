@@ -188,7 +188,7 @@ index 7cf67a3..ef2733f 100644
 -      <scope>runtime</scope>
 +      <groupId>org.apache.tomcat</groupId>
 +      <artifactId>tomcat-servlet-api</artifactId>
-+      <version>7.0.37</version>
++      <version>8.0.20</version>
      </dependency>
      <dependency>
 -      <groupId>tomcat</groupId>
@@ -204,7 +204,7 @@ index 7cf67a3..ef2733f 100644
 -      <scope>runtime</scope>
 +      <groupId>org.apache.tomcat</groupId>
 +      <artifactId>tomcat-el-api</artifactId>
-+      <version>7.0.37</version>
++      <version>8.0.20</version>
      </dependency>
      <dependency>
        <groupId>commons-el</groupId>
@@ -1128,7 +1128,7 @@ index d01a32f..d85405b 100644
  
    <properties>
 -    <tomcat.version>6.0.36</tomcat.version>
-+    <tomcat.version>7.0.37</tomcat.version>
++    <tomcat.version>8.0.20</tomcat.version>
      <httpfs.source.repository>REPO NOT AVAIL</httpfs.source.repository>
      <httpfs.source.repository>REPO NOT AVAIL</httpfs.source.repository>
      <httpfs.source.revision>REVISION NOT AVAIL</httpfs.source.revision>
@@ -1137,7 +1137,7 @@ index d01a32f..d85405b 100644
      <kerberos.realm>LOCALHOST</kerberos.realm>
      <test.exclude.kerberos.test>**/TestHttpFSWithKerberos.java</test.exclude.kerberos.test>
 -    <tomcat.download.url>http://archive.apache.org/dist/tomcat/tomcat-6/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.tar.gz</tomcat.download.url>
-+    <tomcat.download.url>http://archive.apache.org/dist/tomcat/tomcat-7/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.tar.gz</tomcat.download.url>
++    <tomcat.download.url>http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.tar.gz</tomcat.download.url>
    </properties>
  
    <dependencies>
@@ -2189,7 +2189,7 @@ index b315e2b..e9b072d 100644
 -        <version>5.5.23</version>
 +        <groupId>org.apache.tomcat</groupId>
 +        <artifactId>tomcat-servlet-api</artifactId>
-+        <version>7.0.37</version>
++        <version>8.0.20</version>
        </dependency>
        <dependency>
 -        <groupId>javax.servlet.jsp</groupId>
