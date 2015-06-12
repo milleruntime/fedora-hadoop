@@ -126,8 +126,8 @@ BuildRequires: java-xmlbuilder
 BuildRequires: javamail
 BuildRequires: javapackages-tools
 BuildRequires: jdiff
-BuildRequires: jersey
-BuildRequires: jersey-contribs
+BuildRequires: jersey1
+BuildRequires: jersey1-contribs
 BuildRequires: jets3t
 BuildRequires: jettison
 BuildRequires: jetty8
