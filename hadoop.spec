@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 9%{?dist}
+Release: 10%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -202,7 +202,7 @@ BuildRequires: zookeeper-java > 3.4.5-15
 %endif
 
 # For tests
-BuildRequires: jersey-test-framework
+BuildRequires: jersey1-test-framework
 %if 0%{?fedora} > 20
 BuildRequires: maven-surefire-provider-junit
 %else
@@ -1125,6 +1125,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Fri Jul 10 2015 Mosaab Alzoubi <moceap@hotmail.com> - 2.4.1-10
+- Fix #1239555
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.4.1-9
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
