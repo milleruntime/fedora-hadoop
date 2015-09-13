@@ -1,0 +1,18 @@
+diff -Nru hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStreamFile.java hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.servlet/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStreamFile.java
+--- hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStreamFile.java	2015-03-20 04:45:08.415241957 +0100
++++ hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.servlet/hadoop-hdfs-project/hadoop-hdfs/src/test/java/org/apache/hadoop/hdfs/server/namenode/TestStreamFile.java	2015-03-14 16:33:12.627551779 +0100
+@@ -308,5 +308,14 @@
+     public void write(int b) throws IOException {
+       buffer.append((char) b);
+     }
++
++    public void setWriteListener(javax.servlet.WriteListener listener) {
++      throw new UnsupportedOperationException("Not implemented yet.");
++    }
++
++    public boolean isReady() {
++      return false;
++    }
++
+   }
+ }

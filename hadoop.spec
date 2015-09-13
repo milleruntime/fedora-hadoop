@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 10%{?dist}
+Release: 11%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -70,6 +70,15 @@ Patch11: %{name}-2.4.1-cmake-java-ppc64le.patch
 # Build with hard-float on ARMv7
 Patch12: %{name}-armhfp.patch
 
+# fix Jersey1 support
+Patch13: hadoop-2.4.1-jersey1.patch
+# fix java8 doclint
+Patch14: hadoop-2.4.1-disable-doclint.patch
+# fix exception org.jets3t.service.S3ServiceException is never thrown in body of corresponding try statement
+Patch15: hadoop-2.4.1-jets3t0.9.3.patch
+# add some servlet3.1 missing methods
+Patch16: hadoop-2.4.1-servlet-3.1-api.patch
+
 # This is not a real BR, but is here because of rawhide shift to eclipse
 # aether packages which caused a dependency of a dependency to not get
 # pulled in.
@@ -104,7 +113,6 @@ BuildRequires: ecj >= 1:4.2.1-6
 BuildRequires: fuse-devel
 BuildRequires: fusesource-pom
 BuildRequires: geronimo-jms
-BuildRequires: gcc-c++
 BuildRequires: glassfish-jaxb
 BuildRequires: glassfish-jsp
 BuildRequires: glassfish-jsp-api
@@ -140,22 +148,13 @@ BuildRequires: junit
 BuildRequires: jzlib
 BuildRequires: leveldbjni
 BuildRequires: groovy18
-%if 0%{?fedora} < 21
-BuildRequires: log4j
-%else
 BuildRequires: log4j12
-%endif
-BuildRequires: make
-BuildRequires: maven
 BuildRequires: maven-antrun-plugin
 BuildRequires: maven-assembly-plugin
 BuildRequires: maven-clean-plugin
-BuildRequires: maven-compiler-plugin
 BuildRequires: maven-dependency-plugin
 BuildRequires: maven-enforcer-plugin
-BuildRequires: maven-install-plugin
 BuildRequires: maven-invoker-plugin
-BuildRequires: maven-javadoc-plugin
 BuildRequires: maven-local
 BuildRequires: maven-plugin-build-helper
 BuildRequires: maven-plugin-exec
@@ -163,16 +162,11 @@ BuildRequires: maven-plugin-plugin
 BuildRequires: maven-release-plugin
 BuildRequires: maven-remote-resources-plugin
 BuildRequires: maven-shade-plugin
-BuildRequires: maven-surefire-plugin
 BuildRequires: maven-war-plugin
 BuildRequires: metrics
 BuildRequires: mockito
 BuildRequires: native-maven-plugin
-%if 0%{?fedora} < 21
-BuildRequires: netty
-%else
 BuildRequires: netty3
-%endif
 BuildRequires: objectweb-asm
 BuildRequires: objenesis >= 1.2-16
 BuildRequires: openssl-devel
@@ -187,27 +181,14 @@ BuildRequires: snappy-java
 BuildRequires: systemd
 BuildRequires: tomcat
 BuildRequires: tomcat-el-3.0-api
-%if 0%{?fedora} > 20
 BuildRequires: tomcat-log4j
-%endif
 BuildRequires: tomcat-servlet-3.1-api
 BuildRequires: txw2
-BuildRequires: which
 BuildRequires: xmlenc
 BuildRequires: znerd-oss-parent
-%if 0%{?fedora} < 21
-BuildRequires: zookeeper-java
-%else
 BuildRequires: zookeeper-java > 3.4.5-15
-%endif
-
 # For tests
 BuildRequires: jersey1-test-framework
-%if 0%{?fedora} > 20
-BuildRequires: maven-surefire-provider-junit
-%else
-BuildRequires: maven-surefire-provider-junit4
-%endif
 
 %description
 Apache Hadoop is a framework that allows for the distributed processing of
@@ -484,6 +465,12 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+
+%pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
 
 %if 0%{?fedora} < 21
 # The hadoop test suite needs classes from the zookeeper test suite.
@@ -510,6 +497,7 @@ fix_zookeeper_test hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yar
 sed -i "s/:pom//" hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/pom.xml
 fix_zookeeper_test hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client
 %endif
+
 
 # Remove the maven-site-plugin.  It's not needed
 %pom_remove_plugin :maven-site-plugin
@@ -562,6 +550,7 @@ rm -f hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-test
 %pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:version" 5.0.2 hadoop-project
 %pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:groupId" org.ow2.asm hadoop-project
 %endif
+
 
 # War files we don't want
 %mvn_package :%{name}-auth-examples __noinstall
@@ -1125,6 +1114,10 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Wed Sep 09 2015 gil cattaneo <puntogil@libero.it> 2.4.1-11
+- fix FTBFS RHBZ#1239555
+- remove all BuildRequires which have been istalled by default
+
 * Fri Jul 10 2015 Mosaab Alzoubi <moceap@hotmail.com> - 2.4.1-10
 - Fix #1239555
 
