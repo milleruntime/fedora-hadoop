@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 11%{?dist}
+Release: 12%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -41,7 +41,6 @@ Source10: %{name}-mapred-site.xml
 Source11: %{name}-yarn-site.xml
 Source12: %{name}-httpfs.sysconfig
 Source13: hdfs-create-dirs
-Source14: %{name}-tomcat-users.xml
 # This patch includes the following upstream tickets:
 # https://issues.apache.org/jira/browse/HADOOP-9613
 # https://issues.apache.org/jira/browse/HDFS-5411
@@ -104,6 +103,7 @@ BuildRequires: atinject
 BuildRequires: avalon-framework
 BuildRequires: avalon-logkit
 BuildRequires: avro
+BuildRequires: avro-maven-plugin
 BuildRequires: bookkeeper-java
 BuildRequires: cglib
 BuildRequires: checkstyle
@@ -762,13 +762,18 @@ popd
 # This is needed so the httpfs instance won't collide with a system running
 # tomcat
 for f in catalina.policy catalina.properties context.xml log4j.properties \
-         tomcat.conf web.xml;
+         tomcat.conf web.xml server.xml logging.properties;
 do
   cp -a %{_sysconfdir}/tomcat/$f %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 done
 
-install -m 660 %{SOURCE14} %{buildroot}/%{_sysconfdir}/%{name}/tomcat/tomcat-users.xml
-install -m 664 %{name}-hdfs-project/%{name}-hdfs-httpfs/src/main/tomcat/*.* %{buildroot}/%{_sysconfdir}/%{name}/tomcat
+# Replace, in place, the Tomcat configuration files delivered with the current
+# Fedora release. See BZ#1295968 for some reason.
+sed -i -e 's/8005/${httpfs.admin.port}/g' -e 's/8080/${httpfs.http.port}/g' %{buildroot}/%{_sysconfdir}/%{name}/tomcat/server.xml
+sed -i -e 's/catalina.base/httpfs.log.dir/g' %{buildroot}/%{_sysconfdir}/%{name}/tomcat/logging.properties
+# No longer needed: see above
+#install -m 660 %{SOURCE14} %{buildroot}/%{_sysconfdir}/%{name}/tomcat/tomcat-users.xml
+#install -m 664 %{name}-hdfs-project/%{name}-hdfs-httpfs/src/main/tomcat/ssl-server.xml %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 
 # Copy the httpfs webapp
 cp -arf %{name}-hdfs-project/%{name}-hdfs-httpfs/target/webhdfs %{buildroot}/%{_datadir}/%{name}/httpfs/tomcat/webapps
@@ -1114,6 +1119,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Sat Jan 09 2016 Denis Arnaud <denis.arnaud@fedoraproject.org> 2.4.1-12
+- Fix BZ#1295968: start of tomcat@httpfs
+
 * Wed Sep 09 2015 gil cattaneo <puntogil@libero.it> 2.4.1-11
 - fix FTBFS RHBZ#1239555
 - remove all BuildRequires which have been istalled by default
