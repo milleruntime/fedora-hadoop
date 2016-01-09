@@ -761,10 +761,10 @@ popd
 # Copy the tomcat configuration and overlay with specific configuration bits.
 # This is needed so the httpfs instance won't collide with a system running
 # tomcat
-for f in catalina.policy catalina.properties context.xml log4j.properties \
-         tomcat.conf web.xml server.xml logging.properties;
+for cfgfile in catalina.policy catalina.properties context.xml log4j.properties \
+	tomcat.conf web.xml server.xml logging.properties tomcat-users.xml;
 do
-  cp -a %{_sysconfdir}/tomcat/$f %{buildroot}/%{_sysconfdir}/%{name}/tomcat
+  cp -a %{_sysconfdir}/tomcat/$cfgfile %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 done
 
 # Replace, in place, the Tomcat configuration files delivered with the current
