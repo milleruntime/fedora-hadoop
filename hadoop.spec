@@ -41,6 +41,7 @@ Source10: %{name}-mapred-site.xml
 Source11: %{name}-yarn-site.xml
 Source12: %{name}-httpfs.sysconfig
 Source13: hdfs-create-dirs
+Source14: %{name}-tomcat-users.xml
 # This patch includes the following upstream tickets:
 # https://issues.apache.org/jira/browse/HADOOP-9613
 # https://issues.apache.org/jira/browse/HDFS-5411
@@ -762,7 +763,7 @@ popd
 # This is needed so the httpfs instance won't collide with a system running
 # tomcat
 for cfgfile in catalina.policy catalina.properties context.xml log4j.properties \
-	tomcat.conf web.xml server.xml logging.properties tomcat-users.xml;
+	tomcat.conf web.xml server.xml logging.properties;
 do
   cp -a %{_sysconfdir}/tomcat/$cfgfile %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 done
@@ -771,8 +772,10 @@ done
 # Fedora release. See BZ#1295968 for some reason.
 sed -i -e 's/8005/${httpfs.admin.port}/g' -e 's/8080/${httpfs.http.port}/g' %{buildroot}/%{_sysconfdir}/%{name}/tomcat/server.xml
 sed -i -e 's/catalina.base/httpfs.log.dir/g' %{buildroot}/%{_sysconfdir}/%{name}/tomcat/logging.properties
+# Given the permission, only the root and tomcat users can access to that file,
+# not the build user. So, the build would fail here.
+install -m 660 %{SOURCE14} %{buildroot}/%{_sysconfdir}/%{name}/tomcat/tomcat-users.xml
 # No longer needed: see above
-#install -m 660 %{SOURCE14} %{buildroot}/%{_sysconfdir}/%{name}/tomcat/tomcat-users.xml
 #install -m 664 %{name}-hdfs-project/%{name}-hdfs-httpfs/src/main/tomcat/ssl-server.xml %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 
 # Copy the httpfs webapp
