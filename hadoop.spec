@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 12%{?dist}
+Release: 13%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -78,6 +78,8 @@ Patch14: hadoop-2.4.1-disable-doclint.patch
 Patch15: hadoop-2.4.1-jets3t0.9.3.patch
 # add some servlet3.1 missing methods
 Patch16: hadoop-2.4.1-servlet-3.1-api.patch
+# Adapt to the new BookKeeper ZkUtils API
+Patch17: hadoop-2.4.1-new-bookkeeper.patch
 
 # This is not a real BR, but is here because of rawhide shift to eclipse
 # aether packages which caused a dependency of a dependency to not get
@@ -470,6 +472,7 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
 
@@ -1122,6 +1125,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Sun Jan 31 2016 Denis Arnaud <denis.arnaud@fedoraproject.org> 2.4.1-13
+- Fixed the FTBFS on Fedora 24+
+
 * Sat Jan 09 2016 Denis Arnaud <denis.arnaud@fedoraproject.org> 2.4.1-12
 - Fix BZ#1295968: start of tomcat@httpfs
 
