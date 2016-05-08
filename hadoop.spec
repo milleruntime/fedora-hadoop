@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 15%{?dist}
+Release: 16%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -765,7 +765,7 @@ popd
 # Copy the tomcat configuration and overlay with specific configuration bits.
 # This is needed so the httpfs instance won't collide with a system running
 # tomcat
-for cfgfile in catalina.policy catalina.properties context.xml log4j.properties \
+for cfgfile in catalina.policy catalina.properties context.xml \
 	tomcat.conf web.xml server.xml logging.properties;
 do
   cp -a %{_sysconfdir}/tomcat/$cfgfile %{buildroot}/%{_sysconfdir}/%{name}/tomcat
@@ -1125,6 +1125,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Sun May  8 2016 Peter Robinson <pbrobinson@fedoraproject.org> 2.4.1-16
+- rebuild (aarch64)
+
 * Sat Feb 06 2016 Denis Arnaud <denis.arnaud@fedoraproject.org> 2.4.1-15
 - Rebuilt for new EclipseLink jersey1
 
