@@ -1,0 +1,81 @@
+diff -Nru hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.jets3t/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java
+--- hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java	2014-06-30 09:04:57.000000000 +0200
++++ hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.jets3t/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java	2015-03-14 15:37:19.582587031 +0100
+@@ -91,17 +91,17 @@
+     
+     S3Credentials s3Credentials = new S3Credentials();
+     s3Credentials.initialize(uri, conf);
+-    try {
++    //try {
+       AWSCredentials awsCredentials =
+         new AWSCredentials(s3Credentials.getAccessKey(),
+             s3Credentials.getSecretAccessKey());
+       this.s3Service = new RestS3Service(awsCredentials);
+-    } catch (S3ServiceException e) {
+-      if (e.getCause() instanceof IOException) {
+-        throw (IOException) e.getCause();
+-      }
+-      throw new S3Exception(e);
+-    }
++   // } catch (S3ServiceException e) {
++   //   if (e.getCause() instanceof IOException) {
++   //     throw (IOException) e.getCause();
++   //   }
++   //   throw new S3Exception(e);
++   // }
+     bucket = new S3Bucket(uri.getHost());
+ 
+     this.bufferSize = conf.getInt(
+diff -Nru hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.jets3t/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java
+--- hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java	2014-06-30 09:04:57.000000000 +0200
++++ hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.jets3t/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java	2015-03-14 15:50:35.036095902 +0100
+@@ -117,7 +117,7 @@
+     
+     
+     
+-    try {
++    //try {
+       String accessKey = null;
+       String secretAccessKey = null;
+       String userInfo = uri.getUserInfo();
+@@ -158,12 +158,12 @@
+       AWSCredentials awsCredentials =
+         new AWSCredentials(accessKey, secretAccessKey);
+       this.s3Service = new RestS3Service(awsCredentials);
+-    } catch (S3ServiceException e) {
+-      if (e.getCause() instanceof IOException) {
+-        throw (IOException) e.getCause();
+-      }
+-      throw new S3Exception(e);
+-    }
++    //} catch (S3ServiceException e) {
++    //  if (e.getCause() instanceof IOException) {
++    //    throw (IOException) e.getCause();
++    //  }
++    //  throw new S3Exception(e);
++    //}
+     bucket = new S3Bucket(uri.getHost());
+   }
+   
+diff -Nru hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.jets3t/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java
+--- hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java	2014-06-30 09:04:57.000000000 +0200
++++ hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.jets3t/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java	2015-03-14 15:24:05.397371065 +0100
+@@ -71,14 +71,14 @@
+   public void initialize(URI uri, Configuration conf) throws IOException {
+     S3Credentials s3Credentials = new S3Credentials();
+     s3Credentials.initialize(uri, conf);
+-    try {
++    //try {
+       AWSCredentials awsCredentials =
+         new AWSCredentials(s3Credentials.getAccessKey(),
+             s3Credentials.getSecretAccessKey());
+       this.s3Service = new RestS3Service(awsCredentials);
+-    } catch (S3ServiceException e) {
+-      handleS3ServiceException(e);
+-    }
++    //} catch (S3ServiceException e) {
++    //  handleS3ServiceException(e);
++    //}
+     multipartEnabled =
+         conf.getBoolean("fs.s3n.multipart.uploads.enabled", false);
+     multipartBlockSize = Math.min(

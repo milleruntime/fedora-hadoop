@@ -1,0 +1,44 @@
+diff --git a/hadoop-common-project/hadoop-common/pom.xml b/hadoop-common-project/hadoop-common/pom.xml
+index 7cf67a3..c090916 100644
+--- a/hadoop-common-project/hadoop-common/pom.xml
++++ b/hadoop-common-project/hadoop-common/pom.xml
+@@ -364,16 +364,6 @@
+         </executions>
+       </plugin>
+       <plugin>
+-        <groupId>org.apache.maven.plugins</groupId>
+-        <artifactId>maven-surefire-plugin</artifactId>
+-        <configuration>
+-          <systemPropertyVariables>
+-            <startKdc>${startKdc}</startKdc>
+-            <kdc.resource.dir>${kdc.resource.dir}</kdc.resource.dir>
+-          </systemPropertyVariables>
+-        </configuration>
+-      </plugin>
+-      <plugin>
+         <groupId>org.apache.avro</groupId>
+         <artifactId>avro-maven-plugin</artifactId>
+         <executions>
+@@ -480,6 +470,10 @@
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-surefire-plugin</artifactId>
+         <configuration>
++          <systemPropertyVariables>
++            <startKdc>${startKdc}</startKdc>
++            <kdc.resource.dir>${kdc.resource.dir}</kdc.resource.dir>
++          </systemPropertyVariables>
+           <properties>
+             <property>
+               <name>listener</name>
+diff --git a/pom.xml b/pom.xml
+index 13dbf49..ad84034 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -387,6 +387,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-javadoc-plugin</artifactId>
++            <version>2.8.1</version>
+             <inherited>false</inherited>
+             <executions>
+               <execution>
