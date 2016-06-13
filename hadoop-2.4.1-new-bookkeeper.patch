@@ -1,0 +1,13 @@
+diff -Nru hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-hdfs-project/hadoop-hdfs/src/contrib/bkjournal/src/main/java/org/apache/hadoop/contrib/bkjournal/BookKeeperJournalManager.java hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.bookkeeper/hadoop-hdfs-project/hadoop-hdfs/src/contrib/bkjournal/src/main/java/org/apache/hadoop/contrib/bkjournal/BookKeeperJournalManager.java
+--- hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510/hadoop-hdfs-project/hadoop-hdfs/src/contrib/bkjournal/src/main/java/org/apache/hadoop/contrib/bkjournal/BookKeeperJournalManager.java	2014-06-30 09:04:57.000000000 +0200
++++ hadoop-common-9e2ef43a240fb0f603d8c384e501daec11524510.bookkeeper/hadoop-hdfs-project/hadoop-hdfs/src/contrib/bkjournal/src/main/java/org/apache/hadoop/contrib/bkjournal/BookKeeperJournalManager.java	2016-01-09 13:43:26.831773352 +0100
+@@ -237,7 +237,7 @@
+         zkPathLatch.countDown();
+       }
+     };
+-    ZkUtils.createFullPathOptimistic(zkc, zkAvailablePath, new byte[0],
++    ZkUtils.asyncCreateFullPathOptimistic(zkc, zkAvailablePath, new byte[0],
+         Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT, callback, null);
+ 
+     try {
+
