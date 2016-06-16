@@ -165,6 +165,7 @@ BuildRequires: maven-plugin-plugin
 BuildRequires: maven-release-plugin
 BuildRequires: maven-remote-resources-plugin
 BuildRequires: maven-shade-plugin
+BuildRequires: maven-source-plugin
 BuildRequires: maven-war-plugin
 BuildRequires: metrics
 BuildRequires: mockito
