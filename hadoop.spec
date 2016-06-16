@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 17%{?dist}
+Release: 18%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -240,7 +240,6 @@ Requires: jettison
 Requires: jetty8
 Requires: jsr-311
 Requires: mockito
-Requires: nc6
 Requires: objectweb-asm
 Requires: objenesis
 Requires: paranamer
@@ -1125,6 +1124,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Thu Jun 16 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-18
+- Drop unnecessary nc6 dependency
+
 * Mon Jun 13 2016 Till Maas <opensource@till.name> - 2.4.1-17
 - Rebuild for unretirement
 
