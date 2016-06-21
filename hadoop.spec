@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 18%{?dist}
+Release: 19%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -1126,6 +1126,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Tue Jun 21 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-19
+- Fix FTBFS due to maven-jar-plugin behavior and missing maven-source-plugin
+
 * Thu Jun 16 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-18
 - Drop unnecessary nc6 dependency
 
