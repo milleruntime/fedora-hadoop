@@ -475,6 +475,7 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %patch17 -p1
 
 %pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
+%pom_xpath_inject "pom:plugin[pom:artifactId='maven-jar-plugin']/pom:executions/pom:execution[pom:phase='test-compile']" "<id>default-jar</id>"  hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell
 
 %if 0%{?fedora} < 21
 # The hadoop test suite needs classes from the zookeeper test suite.
