@@ -746,7 +746,7 @@ popd
 # hdfs jar dependencies
 copy_dep_jars $basedir/share/%{name}/hdfs/lib %{buildroot}/%{_datadir}/%{name}/hdfs/lib
 %{_bindir}/xmvn-subst %{buildroot}/%{_datadir}/%{name}/hdfs/lib
-%{__ln_s} %{_javadir}/%{name}/%{name}-hdfs-bkjournal.jar %{buildroot}/%{_datadir}/%{name}/hdfs/lib
+%{__ln_s} %{_jnidir}/%{name}/%{name}-hdfs-bkjournal.jar %{buildroot}/%{_datadir}/%{name}/hdfs/lib
 pushd $basedir/share/%{name}/hdfs
   link_hadoop_jars %{buildroot}/%{_datadir}/%{name}/hdfs
 popd
