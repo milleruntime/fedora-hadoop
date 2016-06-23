@@ -285,7 +285,6 @@ Summary: The Apache Hadoop Distributed File System
 BuildArch: noarch
 Requires: apache-commons-daemon-jsvc
 Requires: %{name}-common = %{version}-%{release}
-Requires(pre): %{name}-common = %{version}-%{release}
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -372,7 +371,7 @@ This package provides the Apache Hadoop Filesystem Library.
 %package mapreduce
 Summary: Apache Hadoop MapReduce (MRv2)
 BuildArch: noarch
-Requires(pre): %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -420,7 +419,7 @@ This package contains test related resources for Apache Hadoop.
 %package yarn
 Summary: Apache Hadoop YARN
 BuildArch: noarch
-Requires(pre): %{name}-common = %{version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
 Requires: %{name}-mapreduce = %{version}-%{release}
 Requires: aopalliance
 Requires: atinject
