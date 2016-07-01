@@ -23,7 +23,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 20%{?dist}
+Release: 21%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -65,8 +65,6 @@ Patch8: %{name}-netty-3-Final.patch
 Patch9: %{name}-tools.jar.patch
 # Workaround for bz1012059
 Patch10: %{name}-build.patch
-# Fix Java detection on ppc64le
-Patch11: %{name}-2.4.1-cmake-java-ppc64le.patch
 # Build with hard-float on ARMv7
 Patch12: %{name}-armhfp.patch
 
@@ -465,7 +463,6 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %endif
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -1125,6 +1122,10 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Fri Jul 01 2016 Than Ngo <than@redhat.com> - 2.4.1-21
+- drop the patch Java detection on ppc64le which
+  causes the wrong detection on ppc64le
+
 * Thu Jun 23 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-20
 - Fix broken symlink (bz#1308662) and bad Requires(pre) (bz#1319092)
 
