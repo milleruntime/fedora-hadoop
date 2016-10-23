@@ -440,7 +440,7 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %autosetup -p1 -n %{name}-common-%{commit}
 %if !%{package_libhdfs}
 # rollback non-applicable patch after autosetup applies all patches
-%patch5 -p1 -R -q
+%patch5 -p1 -R
 %endif
 
 %pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
