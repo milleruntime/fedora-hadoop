@@ -19,11 +19,9 @@
 %global __requires_exclude_from ^%{_libdir}/%{name}/libhadoop.so$
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*$
 
-%bcond_with javadoc
-
 Name:   hadoop
 Version: 2.4.1
-Release: 21%{?dist}
+Release: 22%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -55,8 +53,10 @@ Patch2: %{name}-jni-library-loading.patch
 Patch3: %{name}-maven.patch
 # Don't download tomcat
 Patch4: %{name}-no-download-tomcat.patch
+%if %{package_libhdfs}
 # Use dlopen to find libjvm.so
 Patch5: %{name}-dlopen-libjvm.patch
+%endif
 # Update to Guava 17.0
 Patch7: %{name}-guava.patch
 # Update to Netty 3.6.6-Final
@@ -78,6 +78,8 @@ Patch15: hadoop-2.4.1-jets3t0.9.3.patch
 Patch16: hadoop-2.4.1-servlet-3.1-api.patch
 # Adapt to the new BookKeeper ZkUtils API
 Patch17: hadoop-2.4.1-new-bookkeeper.patch
+# Fix POM warnings which become errors in newest Maven
+Patch18: fix-pom-errors.patch
 
 # This is not a real BR, but is here because of rawhide shift to eclipse
 # aether packages which caused a dependency of a dependency to not get
@@ -217,7 +219,8 @@ This package provides libraries for Apache Hadoop clients.
 %package common
 Summary: Common files needed by Apache Hadoop daemons
 BuildArch: noarch
-Requires: /usr/sbin/useradd
+Requires(pre): /usr/sbin/useradd
+Obsoletes: %{name}-javadoc < 2.4.1-22%{?dist}
 
 # These are required to meet the symlinks for the classpath
 Requires: antlr-tool
@@ -338,19 +341,6 @@ offering local computation and storage.
 This package provides a server that provides HTTP REST API support for
 the complete FileSystem/FileContext interface in HDFS.
 
-# Creation of javadocs takes too many resources and results in failures  on
-# most architectures so only generate on intel 64-bit
-%ifarch x86_64
-%if %{with javadoc}
-%package javadoc
-Summary: Javadoc for Apache Hadoop
-BuildArch: noarch
-
-%description javadoc
-This package contains the API documentation for %{name}.
-%endif
-%endif
-
 %if %{package_libhdfs}
 %package -n libhdfs
 Summary: The Apache Hadoop Filesystem Library
@@ -449,56 +439,10 @@ offering local computation and storage.
 This package contains files needed to run Apache Hadoop YARN in secure mode.
 
 %prep
-%setup -qn %{name}-common-%{commit}
-%patch0 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%if %{package_libhdfs}
-%patch5 -p1
-%endif
-%if 0%{?fedora} >= 21
-%patch7 -p1
-%patch8 -p1
-%endif
-%patch9 -p1
-%patch10 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
+%autosetup -p1 -n %{name}-common-%{commit}
 
 %pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
 %pom_xpath_inject "pom:plugin[pom:artifactId='maven-jar-plugin']/pom:executions/pom:execution[pom:phase='test-compile']" "<id>default-jar</id>"  hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell
-
-%if 0%{?fedora} < 21
-# The hadoop test suite needs classes from the zookeeper test suite.
-# We need to modify the deps to use the pom for the zookeeper-test jar
-fix_zookeeper_test()
-{
-%pom_xpath_remove "pom:project/pom:dependencies/pom:dependency[pom:artifactId='zookeeper' and pom:scope='test']/pom:type" $1 
-%pom_xpath_inject "pom:project/pom:dependencies/pom:dependency[pom:artifactId='zookeeper' and pom:scope='test']" " 
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.netty</groupId>
-          <artifactId>netty</artifactId>
-        </exclusion>
-      </exclusions>
-  " $1
-%pom_xpath_set "pom:project/pom:dependencies/pom:dependency[pom:artifactId='zookeeper' and pom:scope='test']/pom:artifactId" zookeeper-test $1 
-}
-
-fix_zookeeper_test hadoop-common-project/hadoop-common
-fix_zookeeper_test hadoop-hdfs-project/hadoop-hdfs
-fix_zookeeper_test hadoop-hdfs-project/hadoop-hdfs-nfs
-fix_zookeeper_test hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager
-
-sed -i "s/:pom//" hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client/pom.xml
-fix_zookeeper_test hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client
-%endif
-
 
 # Remove the maven-site-plugin.  It's not needed
 %pom_remove_plugin :maven-site-plugin
@@ -539,6 +483,12 @@ rm -f hadoop-common-project/hadoop-auth/src/test/java/org/apache/hadoop/security
 rm -f hadoop-common-project/hadoop-auth/src/test/java/org/apache/hadoop/security/authentication/server/TestKerberosAuthenticationHandler.java
 rm -f hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-tests/src/test/java/org/apache/hadoop/yarn/server/TestContainerManagerSecurity.java
 
+%if 0%{?fedora} > 25
+# Disable hadoop-pipes, because it needs upstream patching for Openssl 1.1.0
+%pom_disable_module hadoop-pipes hadoop-tools
+%pom_remove_dep :hadoop-pipes hadoop-tools/hadoop-tools-dist
+%endif
+
 # Add dependencies for timeline service
 %pom_add_dep org.iq80.leveldb:leveldb hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-applicationhistoryservice
 %pom_add_dep org.fusesource.hawtjni:hawtjni-runtime hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-applicationhistoryservice
@@ -546,11 +496,9 @@ rm -f hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-test
 # Fix scope on hadoop-common:test-jar
 %pom_xpath_set "pom:project/pom:dependencies/pom:dependency[pom:artifactId='hadoop-common' and pom:type='test-jar']/pom:scope" test hadoop-tools/hadoop-openstack
 
-%if 0%{?fedora} > 20
 # Modify asm version to version 5.0.2 and groupId to org.ow2.asm
 %pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:version" 5.0.2 hadoop-project
 %pom_xpath_set "pom:project/pom:dependencyManagement/pom:dependencies/pom:dependency[pom:artifactId='asm']/pom:groupId" org.ow2.asm hadoop-project
-%endif
 
 
 # War files we don't want
@@ -579,7 +527,9 @@ rm -f hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-test
 %mvn_package :%{name}-rumen::{}: %{name}-mapreduce
 %mvn_package :%{name}-sls::{}: %{name}-mapreduce
 %mvn_package :%{name}-streaming::{}: %{name}-mapreduce
+%if 0%{?fedora} <= 25
 %mvn_package :%{name}-pipes::{}: %{name}-mapreduce
+%endif
 %mvn_package :%{name}-tools*::{}: %{name}-mapreduce
 %mvn_package :%{name}-maven-plugins::{}: %{name}-maven-plugin
 %mvn_package :%{name}-minicluster::{}: %{name}-tests
@@ -589,18 +539,11 @@ rm -f hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-test
 %mvn_file :%{name}-common::tests: %{name}/%{name}-common
 
 %build
-%ifnarch x86_64
-opts="-j"
-%else
-%if %{without javadoc}
-opts="-j"
-%endif
-%endif
 # increase JVM memory limits to avoid OOM during build
 %ifarch s390x ppc64le
 export MAVEN_OPTS="-Xms2048M -Xmx4096M"
 %endif
-%mvn_build $opts -- -Drequire.snappy=true -Dcontainer-executor.conf.dir=%{_sysconfdir}/%{name} -Pdist,native -DskipTests -DskipTest -DskipIT
+%mvn_build -j -- -Drequire.snappy=true -Dcontainer-executor.conf.dir=%{_sysconfdir}/%{name} -Pdist,native -DskipTests -DskipTest -DskipIT
 
 # This takes a long time to run, so comment out for now
 #%%check
@@ -763,7 +706,7 @@ popd
 # This is needed so the httpfs instance won't collide with a system running
 # tomcat
 for cfgfile in catalina.policy catalina.properties context.xml \
-	tomcat.conf web.xml server.xml logging.properties;
+  tomcat.conf web.xml server.xml logging.properties;
 do
   cp -a %{_sysconfdir}/tomcat/$cfgfile %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 done
@@ -775,8 +718,6 @@ sed -i -e 's/catalina.base/httpfs.log.dir/g' %{buildroot}/%{_sysconfdir}/%{name}
 # Given the permission, only the root and tomcat users can access to that file,
 # not the build user. So, the build would fail here.
 install -m 660 %{SOURCE14} %{buildroot}/%{_sysconfdir}/%{name}/tomcat/tomcat-users.xml
-# No longer needed: see above
-#install -m 664 %{name}-hdfs-project/%{name}-hdfs-httpfs/src/main/tomcat/ssl-server.xml %{buildroot}/%{_sysconfdir}/%{name}/tomcat
 
 # Copy the httpfs webapp
 cp -arf %{name}-hdfs-project/%{name}-hdfs-httpfs/target/webhdfs %{buildroot}/%{_datadir}/%{name}/httpfs/tomcat/webapps
@@ -1059,13 +1000,6 @@ fi
 %attr(0775,root,tomcat) %dir %{_var}/cache/%{name}-httpfs/temp
 %attr(0775,root,tomcat) %dir %{_var}/cache/%{name}-httpfs/work
 
-%ifarch x86_64
-%if %{with javadoc}
-%files -f .mfiles-javadoc javadoc
-%doc hadoop-dist/target/hadoop-%{hadoop_version}/share/doc/hadoop/common/LICENSE.txt hadoop-dist/target/hadoop-%{hadoop_version}/share/doc/hadoop/common/NOTICE.txt
-%endif
-%endif
-
 %if %{package_libhdfs}
 %files -n libhdfs
 %doc hadoop-dist/target/hadoop-%{hadoop_version}/share/doc/hadoop/hdfs/LICENSE.txt
@@ -1122,6 +1056,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Sat Oct 22 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-22
+- General cleanup and restore builds on rawhide (disable hadoop-pipes)
+
 * Fri Jul 01 2016 Than Ngo <than@redhat.com> - 2.4.1-21
 - drop the patch Java detection on ppc64le which
   causes the wrong detection on ppc64le
@@ -1254,7 +1191,7 @@ fi
 - Fixed symlink for hdfs-bkjournal
 - Moved libhdfs.so to devel package (BZ1017579)
 - Fixed symlink paths for hadoop jars (BZ1017568)
-- Added ownership of %{_datadir}/%{name}/hadoop/common
+- Added ownership of %%{_datadir}/%%{name}/hadoop/common
 
 * Mon Oct  7 2013 Robert Rati <rrati@redhat> - 2.0.5-11
 - Workaround for BZ1015612
@@ -1276,7 +1213,7 @@ fi
 - Packaged test jars into test subpackage
 - hdfs subpackage contains bkjounal jar
 - Created client subpackage
-- Moved libhdfs to %{_libdir} (BZ1003036)
+- Moved libhdfs to %%{_libdir} (BZ1003036)
 - Added dependency from libhdfs to hdfs (BZ1003039)
 
 * Wed Aug 28 2013 Robert Rati <rrati@redhat> - 2.0.5-8

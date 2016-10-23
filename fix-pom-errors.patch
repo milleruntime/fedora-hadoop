@@ -1,0 +1,50 @@
+--- a/hadoop-project/pom.xml	2016-10-22 19:21:40.448895211 -0400
++++ b/hadoop-project/pom.xml	2016-10-22 19:32:08.923535480 -0400
+@@ -919,6 +919,20 @@
+             </goals>
+             <phase>pre-site</phase>
+           </execution>
++          <execution>
++            <id>depcheck</id>
++            <configuration>
++              <rules>
++                <DependencyConvergence>
++                  <uniqueVersions>true</uniqueVersions>
++                </DependencyConvergence>
++              </rules>
++            </configuration>
++            <goals>
++              <goal>enforce</goal>
++            </goals>
++            <phase>verify</phase>
++          </execution>
+         </executions>
+       </plugin>
+       <plugin>
+@@ -969,26 +983,6 @@
+           <includeReports>false</includeReports>
+         </configuration>
+       </plugin>
+-      <plugin>
+-        <groupId>org.apache.maven.plugins</groupId>
+-        <artifactId>maven-enforcer-plugin</artifactId>
+-        <executions>
+-          <execution>
+-            <id>depcheck</id>
+-            <configuration>
+-              <rules>
+-                <DependencyConvergence>
+-                  <uniqueVersions>true</uniqueVersions> 
+-                </DependencyConvergence>
+-              </rules>
+-            </configuration>
+-            <goals>
+-              <goal>enforce</goal>
+-            </goals>
+-            <phase>verify</phase>
+-          </execution>
+-        </executions>
+-      </plugin>
+     </plugins>
+   </build>
+ 
