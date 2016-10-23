@@ -21,7 +21,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 22%{?dist}
+Release: 23%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -53,10 +53,8 @@ Patch2: %{name}-jni-library-loading.patch
 Patch3: %{name}-maven.patch
 # Don't download tomcat
 Patch4: %{name}-no-download-tomcat.patch
-%if %{package_libhdfs}
 # Use dlopen to find libjvm.so
 Patch5: %{name}-dlopen-libjvm.patch
-%endif
 # Update to Guava 17.0
 Patch7: %{name}-guava.patch
 # Update to Netty 3.6.6-Final
@@ -440,6 +438,10 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 
 %prep
 %autosetup -p1 -n %{name}-common-%{commit}
+%if !%{package_libhdfs}
+# rollback non-applicable patch after autosetup applies all patches
+%patch5 -p1 -R -q
+%endif
 
 %pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
 %pom_xpath_inject "pom:plugin[pom:artifactId='maven-jar-plugin']/pom:executions/pom:execution[pom:phase='test-compile']" "<id>default-jar</id>"  hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell
@@ -1056,6 +1058,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Sun Oct 23 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-23
+- fix jni patch on unsupported arches
+
 * Sat Oct 22 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-22
 - General cleanup and restore builds on rawhide (disable hadoop-pipes)
 
