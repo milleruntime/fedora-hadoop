@@ -46,7 +46,7 @@ index 878289f..62686b3 100644
  #include <stdio.h> 
  #include <string.h> 
  
-@@ -442,10 +443,44 @@ static JNIEnv* getGlobalJNIEnv(void)
+@@ -442,10 +443,82 @@ static JNIEnv* getGlobalJNIEnv(void)
      jint rv = 0; 
      jint noVMs = 0;
      jthrowable jthr;
@@ -63,22 +63,60 @@ index 878289f..62686b3 100644
 +        javaHome = "/usr/lib/jvm";
 +    }
 +
++#if   defined(__x86_64__) && defined (__LP64__)
++    const char *arch="amd64";
++#elif defined(__x86_64__) && defined (__ILP32__)
++    const char *arch="x32";
++#elif defined(__powerpc64__) && defined(__LITTLE_ENDIAN__)
++    const char *arch="ppc64le";
++#elif defined(__powerpc64__)
++    const char *arch="ppc64";
++#elif defined(__powerpc__)
++    const char *arch="ppc";
++#elif defined(__i386__)
++    const char *arch="i386";
++#elif defined(__ia64__)
++    const char *arch="ia64";
++#elif defined(__s390x__)
++    const char *arch="s390x";
++#elif defined(__s390__)
++    const char *arch="s390";
++#elif defined(__armel__)
++    const char *arch="arm";
++#elif defined(__arm__)
++    const char *arch="arm";
++#elif defined(__aarch64__)
++    const char *arch="aarch64";
++#elif defined(__sparc__) && defined(__arch64__)
++    const char *arch="sparcv9";
++#elif defined(__sparc__)
++    const char *arch="sparc";
++#elif defined(__alpha__)
++    const char *arch="alpha";
++#elif defined(__mips__) && defined(__MIPSEL__) && _MIPS_SIM==_ABIO32
++    const char *arch="mipsel";
++#elif defined(__mips__) && defined(__MIPSEL__)
++    const char *arch="mips64el";
++#elif defined(__mips__) && _MIPS_SIM==_ABIO32
++    const char *arch="mips";
++#elif defined(__mips__)
++    const char *arch="mips64";
++#else
++#error Unknown JVM architecture
++#endif
++
 +    //Load the appropriate libjvm
 +    char libjvmPath[strlen(javaHome)+35];
-+    snprintf(libjvmPath, sizeof(libjvmPath), "%s/jre/lib/amd64/server/libjvm.so", javaHome);
++    snprintf(libjvmPath, sizeof(libjvmPath), "%s/jre/lib/%s/server/libjvm.so", javaHome, arch);
 +    jvmHandle = dlopen(libjvmPath, RTLD_NOW|RTLD_LOCAL);
 +    if (jvmHandle == NULL) {
-+        snprintf(libjvmPath, sizeof(libjvmPath), "%s/jre/lib/i386/server/libjvm.so", javaHome);
-+        jvmHandle = dlopen(libjvmPath, RTLD_NOW|RTLD_LOCAL);
-+        if (jvmHandle == NULL) {
-+            fprintf(stderr, "Failed to load libjvm.so!\n");
-+            return NULL;
-+        }
++        fprintf(stderr, "Failed to load libjvm.so!\n");
++        return NULL;
 +    }
  
 -    rv = JNI_GetCreatedJavaVMs(&(vmBuf[0]), vmBufLength, &noVMs);
 +    //Load the JNI_GetCreatedJavaVMs function from the libjvm library
-+    *(void **)(&getCreatedJavaJVMsPtr) = dlsym(jvmHandle, "JNI_GetCreatedJavaVMs");
++    getCreatedJavaJVMsPtr = (jint JNICALL (*)(JavaVM **, jsize, jsize *)) dlsym(jvmHandle, "JNI_GetCreatedJavaVMs");
 +    dlsym_error = dlerror();
 +    if (dlsym_error) {
 +        fprintf(stderr, "Can not load symbol JNI_GetCreatedJavaVMs: %s\n", dlsym_error);
@@ -92,7 +130,7 @@ index 878289f..62686b3 100644
          return NULL;
      }
  
-@@ -454,6 +489,7 @@ static JNIEnv* getGlobalJNIEnv(void)
+@@ -454,6 +527,7 @@ static JNIEnv* getGlobalJNIEnv(void)
          char *hadoopClassPath = getenv("CLASSPATH");
          if (hadoopClassPath == NULL) {
              fprintf(stderr, "Environment variable CLASSPATH not set!\n");
@@ -100,13 +138,13 @@ index 878289f..62686b3 100644
              return NULL;
          } 
          char *hadoopClassPathVMArg = "-Djava.class.path=";
-@@ -502,7 +538,15 @@ static JNIEnv* getGlobalJNIEnv(void)
+@@ -502,7 +576,15 @@ static JNIEnv* getGlobalJNIEnv(void)
          vm_args.nOptions = noArgs; 
          vm_args.ignoreUnrecognized = 1;
  
 -        rv = JNI_CreateJavaVM(&vm, (void*)&env, &vm_args);
 +        //Load the JNI_CreateJavaVM function from the libjvm library
-+        *(void **)(&createJavaVMPtr) = dlsym(jvmHandle, "JNI_CreateJavaVM");
++        createJavaVMPtr = (jint JNICALL (*)(JavaVM **, void **, void *)) dlsym(jvmHandle, "JNI_CreateJavaVM");
 +        dlsym_error = dlerror();
 +        if (dlsym_error) {
 +            fprintf(stderr, "Can not load symbol JNI_CreateJavaVM: %s\n", dlsym_error);
@@ -117,7 +155,7 @@ index 878289f..62686b3 100644
  
          if (hadoopJvmArgs != NULL)  {
            free(hadoopJvmArgs);
-@@ -512,6 +556,7 @@ static JNIEnv* getGlobalJNIEnv(void)
+@@ -512,6 +594,7 @@ static JNIEnv* getGlobalJNIEnv(void)
          if (rv != 0) {
              fprintf(stderr, "Call to JNI_CreateJavaVM failed "
                      "with error: %d\n", rv);

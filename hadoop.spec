@@ -1,12 +1,5 @@
 %global _hardened_build 1
 
-# libhdfs is only supported on intel architectures atm.
-%ifarch %ix86 x86_64
-%global package_libhdfs 1
-%else
-%global package_libhdfs 0
-%endif
-
 %global commit 9e2ef43a240fb0f603d8c384e501daec11524510
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
@@ -21,7 +14,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 23%{?dist}
+Release: 24%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -270,14 +263,12 @@ offering local computation and storage.
 
 This package contains the native-hadoop library
 
-%if %{package_libhdfs}
 %package devel
 Summary: Headers for Apache Hadoop
 Requires: libhdfs%{?_isa} = %{version}-%{release}
 
 %description devel
 Header files for Apache Hadoop's hdfs library and other utilities
-%endif
 
 %package hdfs
 Summary: The Apache Hadoop Distributed File System
@@ -297,7 +288,6 @@ offering local computation and storage.
 The Hadoop Distributed File System (HDFS) is the primary storage system
 used by Apache Hadoop applications.
 
-%if %{package_libhdfs}
 %package hdfs-fuse
 Summary: Allows mounting of Apache Hadoop HDFS
 Requires: fuse
@@ -315,7 +305,6 @@ offering local computation and storage.
 
 This package provides tools that allow HDFS to be mounted as a standard
 file system through fuse.
-%endif
 
 %package httpfs
 Summary: Provides web access to HDFS
@@ -339,7 +328,6 @@ offering local computation and storage.
 This package provides a server that provides HTTP REST API support for
 the complete FileSystem/FileContext interface in HDFS.
 
-%if %{package_libhdfs}
 %package -n libhdfs
 Summary: The Apache Hadoop Filesystem Library
 Requires: %{name}-hdfs = %{version}-%{release}
@@ -352,7 +340,6 @@ It is designed to scale up from single servers to thousands of machines, each
 offering local computation and storage.
 
 This package provides the Apache Hadoop Filesystem Library.
-%endif
 
 %package mapreduce
 Summary: Apache Hadoop MapReduce (MRv2)
@@ -438,10 +425,6 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 
 %prep
 %autosetup -p1 -n %{name}-common-%{commit}
-%if !%{package_libhdfs}
-# rollback non-applicable patch after autosetup applies all patches
-%patch5 -p1 -R
-%endif
 
 %pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
 %pom_xpath_inject "pom:plugin[pom:artifactId='maven-jar-plugin']/pom:executions/pom:execution[pom:phase='test-compile']" "<id>default-jar</id>"  hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell
@@ -630,13 +613,11 @@ rm -f %{buildroot}/%{_sbindir}/hdfs-config.sh
 cp -arf $basedir/etc/* %{buildroot}/%{_sysconfdir}
 cp -arf $basedir/lib/native/libhadoop.so* %{buildroot}/%{_libdir}/%{name}
 chrpath --delete %{buildroot}/%{_libdir}/%{name}/*
-%if %{package_libhdfs}
 cp -arf $basedir/include/hdfs.h %{buildroot}/%{_includedir}/%{name}
 cp -arf $basedir/lib/native/libhdfs.so* %{buildroot}/%{_libdir}
 chrpath --delete %{buildroot}/%{_libdir}/libhdfs*
 cp -af hadoop-hdfs-project/hadoop-hdfs/target/native/main/native/fuse-dfs/fuse_dfs %{buildroot}/%{_bindir}
 chrpath --delete %{buildroot}/%{_bindir}/fuse_dfs
-%endif
 
 # Not needed since httpfs is deployed with existing systemd setup
 rm -f %{buildroot}/%{_sbindir}/httpfs.sh
@@ -874,9 +855,7 @@ then
 fi
 %systemd_post %{hdfs_services}
 
-%if %{package_libhdfs}
 %post -n libhdfs -p /sbin/ldconfig
-%endif
 
 %post mapreduce
 %systemd_post %{mapreduce_services}
@@ -895,9 +874,7 @@ then
   rm -f %{_var}/cache/%{name}-hdfs
 fi
 
-%if %{package_libhdfs}
 %postun -n libhdfs -p /sbin/ldconfig
-%endif
 
 %postun mapreduce
 %systemd_postun_with_restart %{mapreduce_services}
@@ -954,11 +931,9 @@ fi
 %files common-native
 %{_libdir}/%{name}/libhadoop.*
 
-%if %{package_libhdfs}
 %files devel
 %{_includedir}/%{name}
 %{_libdir}/libhdfs.so
-%endif
 
 %files -f .mfiles-%{name}-hdfs hdfs
 %config(noreplace) %{_sysconfdir}/%{name}/hdfs-site.xml
@@ -979,10 +954,8 @@ fi
 %attr(0755,hdfs,hadoop) %dir %{_var}/log/%{name}-hdfs
 %attr(0755,hdfs,hadoop) %dir %{_sharedstatedir}/%{name}-hdfs
 
-%if %{package_libhdfs}
 %files hdfs-fuse
 %attr(755,hdfs,hadoop) %{_bindir}/fuse_dfs
-%endif
 
 %files httpfs
 %config(noreplace) %{_sysconfdir}/sysconfig/tomcat@httpfs
@@ -1002,11 +975,9 @@ fi
 %attr(0775,root,tomcat) %dir %{_var}/cache/%{name}-httpfs/temp
 %attr(0775,root,tomcat) %dir %{_var}/cache/%{name}-httpfs/work
 
-%if %{package_libhdfs}
 %files -n libhdfs
 %doc hadoop-dist/target/hadoop-%{hadoop_version}/share/doc/hadoop/hdfs/LICENSE.txt
 %{_libdir}/libhdfs.so.*
-%endif
 
 %files -f .mfiles-%{name}-mapreduce mapreduce
 %config(noreplace) %{_sysconfdir}/%{name}/mapred-env.sh
@@ -1058,6 +1029,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Fri Oct 28 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-24
+- build libhdfs for all architectures (bz#1328076)
+
 * Sun Oct 23 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-23
 - fix jni patch on unsupported arches
 
