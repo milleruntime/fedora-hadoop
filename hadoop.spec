@@ -19,7 +19,7 @@ Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
 License: ASL 2.0 and BSD
-URL: http://hadoop.apache.org
+URL:     https://%{name}.apache.org
 Source0: https://github.com/apache/hadoop-common/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
 Source1: %{name}-layout.sh
 Source2: %{name}-hdfs.service.template
@@ -1025,7 +1025,7 @@ fi
 
 %files yarn-security
 %config(noreplace) %{_sysconfdir}/%{name}/container-executor.cfg
-# Permissions set per upstream guidelines: http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html#Configuration_in_Secure_Mode
+# Permissions set per upstream guidelines: https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html#Configuration_in_Secure_Mode
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
