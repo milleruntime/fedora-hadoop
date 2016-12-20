@@ -14,7 +14,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 24%{?dist}
+Release: 25%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -71,6 +71,10 @@ Patch16: hadoop-2.4.1-servlet-3.1-api.patch
 Patch17: hadoop-2.4.1-new-bookkeeper.patch
 # Fix POM warnings which become errors in newest Maven
 Patch18: fix-pom-errors.patch
+%if 0%{?fedora} > 25
+# Fix Protobuf compiler errors after updating to 3.1.0
+Patch19: protobuf3.patch
+%endif
 
 # This is not a real BR, but is here because of rawhide shift to eclipse
 # aether packages which caused a dependency of a dependency to not get
@@ -426,7 +430,11 @@ This package contains files needed to run Apache Hadoop YARN in secure mode.
 %prep
 %autosetup -p1 -n %{name}-common-%{commit}
 
+%if 0%{?fedora} > 25
+%pom_xpath_set "pom:properties/pom:protobuf.version" 3.1.0 hadoop-project
+%else
 %pom_xpath_set "pom:properties/pom:protobuf.version" 2.6.1 hadoop-project
+%endif
 %pom_xpath_inject "pom:plugin[pom:artifactId='maven-jar-plugin']/pom:executions/pom:execution[pom:phase='test-compile']" "<id>default-jar</id>"  hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell
 
 # Remove the maven-site-plugin.  It's not needed
@@ -1029,6 +1037,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Tue Dec 20 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-25
+- Use protobuf 3.1.0; fixes FTBFS (bz#1396787)
+
 * Fri Oct 28 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-24
 - build libhdfs for all architectures (bz#1328076)
 
