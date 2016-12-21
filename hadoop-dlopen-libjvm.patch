@@ -14,13 +14,13 @@ diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt b/hadoop-hdfs-pr
 index 82d1a32..2151bb8 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
-@@ -99,7 +99,6 @@ if (NEED_LINK_DL)
+@@ -147,7 +147,6 @@ if (NEED_LINK_DL)
  endif(NEED_LINK_DL)
  
  target_link_dual_libraries(hdfs
 -    ${JAVA_JVM_LIBRARY}
      ${LIB_DL}
-     pthread
+     ${OS_LINK_LIBRARIES}
  )
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/native/fuse-dfs/CMakeLists.txt b/hadoop-hdfs-project/hadoop-hdfs/src/main/native/fuse-dfs/CMakeLists.txt
 index dd3f1e6..68ba422 100644
@@ -34,29 +34,52 @@ index dd3f1e6..68ba422 100644
          hdfs
          m
          pthread
+@@ -77,16 +77,6 @@ IF(FUSE_FOUND)
+         pthread
+         rt
+     )
+-    add_executable(test_fuse_dfs
+-        test/test_fuse_dfs.c
+-        test/fuse_workload.c
+-    )
+-    target_link_libraries(test_fuse_dfs
+-        ${FUSE_LIBRARIES}
+-        native_mini_dfs
+-        posix_util
+-        pthread
+-    )
+ ELSE(FUSE_FOUND)
+     IF(REQUIRE_FUSE)
+         MESSAGE(FATAL_ERROR "Required component fuse_dfs could not be built.")
 diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/jni_helper.c b/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/jni_helper.c
 index 878289f..62686b3 100644
 --- a/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/jni_helper.c
 +++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/jni_helper.c
-@@ -20,6 +20,7 @@
- #include "exception.h"
- #include "jni_helper.h"
+@@ -24,6 +24,7 @@
+ #include "os/mutexes.h"
+ #include "os/thread_local_storage.h"
  
 +#include <dlfcn.h>
  #include <stdio.h> 
  #include <string.h> 
  
-@@ -442,10 +443,82 @@ static JNIEnv* getGlobalJNIEnv(void)
+@@ -373,6 +374,12 @@ static JNIEnv* getGlobalJNIEnv(void)
      jint rv = 0; 
      jint noVMs = 0;
      jthrowable jthr;
 +    void *jvmHandle = NULL;
 +    jint JNICALL (*getCreatedJavaJVMsPtr)(JavaVM **, jsize, jsize *);
-+    getCreatedJavaJVMsPtr = NULL; 
++    getCreatedJavaJVMsPtr = NULL;
 +    jint JNICALL (*createJavaVMPtr)(JavaVM **, void **, void *);
 +    createJavaVMPtr = NULL;
 +    char *dlsym_error = NULL;
-+
+     char *hadoopClassPath;
+     const char *hadoopClassPathVMArg = "-Djava.class.path=";
+     size_t optHadoopClassPathLen;
+@@ -384,10 +391,75 @@ static JNIEnv* getGlobalJNIEnv(void)
+     JavaVMInitArgs vm_args;
+     JavaVM *vm;
+     JavaVMOption *options;
 +    //Get JAVA_HOME to use appropriate libjvm
 +    char *javaHome = getenv("JAVA_HOME");
 +    if (javaHome == NULL) {
@@ -114,7 +137,7 @@ index 878289f..62686b3 100644
 +        return NULL;
 +    }
  
--    rv = JNI_GetCreatedJavaVMs(&(vmBuf[0]), vmBufLength, &noVMs);
+-    rv = JNI_GetCreatedJavaVMs(&(vmBuf[0]), VM_BUF_LENGTH, &noVMs);
 +    //Load the JNI_GetCreatedJavaVMs function from the libjvm library
 +    getCreatedJavaJVMsPtr = (jint JNICALL (*)(JavaVM **, jsize, jsize *)) dlsym(jvmHandle, "JNI_GetCreatedJavaVMs");
 +    dlsym_error = dlerror();
@@ -123,21 +146,21 @@ index 878289f..62686b3 100644
 +        dlclose(jvmHandle);
 +        return NULL;
 +    }
-+    rv = (*getCreatedJavaJVMsPtr)(&(vmBuf[0]), vmBufLength, &noVMs);
++    rv = (*getCreatedJavaJVMsPtr)(&(vmBuf[0]), VM_BUF_LENGTH, &noVMs);
      if (rv != 0) {
          fprintf(stderr, "JNI_GetCreatedJavaVMs failed with error: %d\n", rv);
 +        dlclose(jvmHandle);
          return NULL;
      }
  
-@@ -454,6 +527,7 @@ static JNIEnv* getGlobalJNIEnv(void)
-         char *hadoopClassPath = getenv("CLASSPATH");
+@@ -396,6 +468,7 @@ static JNIEnv* getGlobalJNIEnv(void)
+         hadoopClassPath = getenv("CLASSPATH");
          if (hadoopClassPath == NULL) {
              fprintf(stderr, "Environment variable CLASSPATH not set!\n");
 +            dlclose(jvmHandle);
              return NULL;
          } 
-         char *hadoopClassPathVMArg = "-Djava.class.path=";
+         optHadoopClassPathLen = strlen(hadoopClassPath) + 
 @@ -502,7 +576,15 @@ static JNIEnv* getGlobalJNIEnv(void)
          vm_args.nOptions = noArgs; 
          vm_args.ignoreUnrecognized = 1;
@@ -163,3 +186,57 @@ index 878289f..62686b3 100644
              return NULL;
          }
          jthr = invokeMethod(env, NULL, STATIC, NULL,
+@@ -470,6 +552,7 @@ static JNIEnv* getGlobalJNIEnv(void)
+         if (rv != 0) {
+             fprintf(stderr, "Call to AttachCurrentThread "
+                     "failed with error: %d\n", rv);
++            dlclose(jvmHandle);
+             return NULL;
+         }
+     }
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt b/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
+index 74f20dd..255d4ab 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/CMakeLists.txt
+@@ -161,7 +161,6 @@ add_executable(test_libhdfs_ops
+ )
+ target_link_libraries(test_libhdfs_ops
+     hdfs_static
+-    ${JAVA_JVM_LIBRARY}
+ )
+ 
+ add_executable(test_libhdfs_read
+@@ -169,7 +168,6 @@ add_executable(test_libhdfs_read
+ )
+ target_link_libraries(test_libhdfs_read
+     hdfs_static
+-    ${JAVA_JVM_LIBRARY}
+ )
+ 
+ add_executable(test_libhdfs_write
+@@ -177,7 +175,6 @@ add_executable(test_libhdfs_write
+ )
+ target_link_libraries(test_libhdfs_write
+     hdfs_static
+-    ${JAVA_JVM_LIBRARY}
+ )
+ 
+ add_library(native_mini_dfs
+@@ -189,17 +186,9 @@ add_library(native_mini_dfs
+     ${OS_DIR}/thread_local_storage.c
+ )
+ target_link_libraries(native_mini_dfs
+-    ${JAVA_JVM_LIBRARY}
+     ${OS_LINK_LIBRARIES}
+ )
+ 
+-add_executable(test_native_mini_dfs
+-    main/native/libhdfs/test_native_mini_dfs.c
+-)
+-target_link_libraries(test_native_mini_dfs
+-    native_mini_dfs
+-)
+-
+ add_executable(test_libhdfs_threaded
+     main/native/libhdfs/expect.c
+     main/native/libhdfs/test_libhdfs_threaded.c

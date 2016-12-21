@@ -1,0 +1,37 @@
+diff --git a/hadoop-common-project/hadoop-common/src/main/native/src/org/apache/hadoop/crypto/OpensslCipher.c b/hadoop-common-project/hadoop-common/src/main/native/src/org/apache/hadoop/crypto/OpensslCipher.c
+index 5cb5bba..5294ec7 100644
+--- a/hadoop-common-project/hadoop-common/src/main/native/src/org/apache/hadoop/crypto/OpensslCipher.c
++++ b/hadoop-common-project/hadoop-common/src/main/native/src/org/apache/hadoop/crypto/OpensslCipher.c
+@@ -253,14 +253,15 @@ JNIEXPORT jlong JNICALL Java_org_apache_hadoop_crypto_OpensslCipher_init
+ static int check_update_max_output_len(EVP_CIPHER_CTX *context, int input_len, 
+     int max_output_len)
+ {
+-  if (context->flags & EVP_CIPH_NO_PADDING) {
++  unsigned long flags = EVP_CIPHER_flags(EVP_CIPHER_CTX_cipher(context));
++  if (flags & EVP_CIPH_NO_PADDING) {
+     if (max_output_len >= input_len) {
+       return 1;
+     }
+     return 0;
+   } else {
+-    int b = context->cipher->block_size;
+-    if (context->encrypt) {
++    int b = EVP_CIPHER_CTX_block_size(context);
++    if (EVP_CIPHER_CTX_encrypting(context)) {
+       if (max_output_len >= input_len + b - 1) {
+         return 1;
+       }
+@@ -307,10 +308,11 @@ JNIEXPORT jint JNICALL Java_org_apache_hadoop_crypto_OpensslCipher_update
+ static int check_doFinal_max_output_len(EVP_CIPHER_CTX *context, 
+     int max_output_len)
+ {
+-  if (context->flags & EVP_CIPH_NO_PADDING) {
++  unsigned long flags = EVP_CIPHER_flags(EVP_CIPHER_CTX_cipher(context));
++  if (flags & EVP_CIPH_NO_PADDING) {
+     return 1;
+   } else {
+-    int b = context->cipher->block_size;
++    int b = EVP_CIPHER_CTX_block_size(context);
+     if (max_output_len >= b) {
+       return 1;
+     }

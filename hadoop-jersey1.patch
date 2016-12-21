@@ -1,0 +1,13 @@
+diff --git a/hadoop-project/pom.xml b/hadoop-project/pom.xml
+index b646304..97ac7c2 100644
+--- a/hadoop-project/pom.xml
++++ b/hadoop-project/pom.xml
+@@ -64,7 +64,7 @@
+     <avro.version>1.7.4</avro.version>
+ 
+     <!-- jersey version -->
+-    <jersey.version>1.9</jersey.version>
++    <jersey.version>1</jersey.version>
+ 
+     <!-- jackson versions -->
+     <jackson.version>1.9.13</jackson.version>

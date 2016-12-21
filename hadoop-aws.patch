@@ -1,0 +1,60 @@
+diff --git a/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java b/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java
+index 901f89b..3a44a01 100644
+--- a/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java
++++ b/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/Jets3tFileSystemStore.java
+@@ -91,17 +91,10 @@ class Jets3tFileSystemStore implements FileSystemStore {
+     
+     S3Credentials s3Credentials = new S3Credentials();
+     s3Credentials.initialize(uri, conf);
+-    try {
+       AWSCredentials awsCredentials =
+         new AWSCredentials(s3Credentials.getAccessKey(),
+             s3Credentials.getSecretAccessKey());
+       this.s3Service = new RestS3Service(awsCredentials);
+-    } catch (S3ServiceException e) {
+-      if (e.getCause() instanceof IOException) {
+-        throw (IOException) e.getCause();
+-      }
+-      throw new S3Exception(e);
+-    }
+     bucket = new S3Bucket(uri.getHost());
+ 
+     this.bufferSize = conf.getInt(
+diff --git a/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java b/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java
+index 429c272..411bd53 100644
+--- a/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java
++++ b/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3/MigrationTool.java
+@@ -117,7 +117,6 @@ public class MigrationTool extends Configured implements Tool {
+     
+     
+     
+-    try {
+       String accessKey = null;
+       String secretAccessKey = null;
+       String userInfo = uri.getUserInfo();
+@@ -158,12 +157,6 @@ public class MigrationTool extends Configured implements Tool {
+       AWSCredentials awsCredentials =
+         new AWSCredentials(accessKey, secretAccessKey);
+       this.s3Service = new RestS3Service(awsCredentials);
+-    } catch (S3ServiceException e) {
+-      if (e.getCause() instanceof IOException) {
+-        throw (IOException) e.getCause();
+-      }
+-      throw new S3Exception(e);
+-    }
+     bucket = new S3Bucket(uri.getHost());
+   }
+   
+diff --git a/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java b/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java
+index a10d6f2..3e2fa38 100644
+--- a/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java
++++ b/hadoop-tools/hadoop-aws/src/main/java/org/apache/hadoop/fs/s3native/Jets3tNativeFileSystemStore.java
+@@ -83,7 +83,7 @@ class Jets3tNativeFileSystemStore implements NativeFileSystemStore {
+         new AWSCredentials(s3Credentials.getAccessKey(),
+             s3Credentials.getSecretAccessKey());
+       this.s3Service = new RestS3Service(awsCredentials);
+-    } catch (S3ServiceException e) {
++    } catch (Exception e) {
+       handleException(e);
+     }
+     multipartEnabled =
