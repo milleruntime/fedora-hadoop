@@ -14,7 +14,7 @@
 
 Name:   hadoop
 Version: 2.4.1
-Release: 25%{?dist}
+Release: 26%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -1037,6 +1037,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.4.1-26
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Tue Dec 20 2016 Christopher Tubbs <ctubbsii@fedoraproject.org> - 2.4.1-25
 - Use protobuf 3.1.0; fixes FTBFS (bz#1396787)
 
