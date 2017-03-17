@@ -1,0 +1,12 @@
+diff --git a/hadoop-common-project/hadoop-common/src/main/conf/hadoop-env.sh b/hadoop-common-project/hadoop-common/src/main/conf/hadoop-env.sh
+index b82267d..9d1ad5e 100644
+--- a/hadoop-common-project/hadoop-common/src/main/conf/hadoop-env.sh
++++ b/hadoop-common-project/hadoop-common/src/main/conf/hadoop-env.sh
+@@ -40,6 +40,7 @@ for f in $HADOOP_HOME/contrib/capacity-scheduler/*.jar; do
+     export HADOOP_CLASSPATH=$f
+   fi
+ done
++export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/usr/share/java/netty/netty-common.jar:/usr/share/java/netty/netty-transport.jar:/usr/share/java/jctools/jctools-core.jar:/usr/share/java/netty/netty-buffer.jar
+
+ # The maximum amount of heap to use, in MB. Default is 1000.
+ #export HADOOP_HEAPSIZE=

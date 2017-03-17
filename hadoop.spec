@@ -11,7 +11,7 @@
 
 Name:   hadoop
 Version: 2.7.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A software platform for processing vast amounts of data
 # The BSD license file is missing
 # https://issues.apache.org/jira/browse/HADOOP-9849
@@ -66,6 +66,8 @@ Patch19: protobuf3.patch
 Patch21: %{name}-openssl.patch
 # fix exception no longer thrown in aws
 Patch22: %{name}-aws.patch
+# fix classpath issues
+Patch23: classpath.patch
 
 # This is not a real BR, but is here because of rawhide shift to eclipse
 # aether packages which caused a dependency of a dependency to not get
@@ -1136,6 +1138,9 @@ fi
 %attr(6050,root,yarn) %{_bindir}/container-executor
 
 %changelog
+* Fri Mar 17 2017 Mike Miller <mmiller@apache.org> - 2.7.3-2
+- Fix classpath issues
+
 * Thu Mar 02 2017 Mike Miller <mmiller@apache.org> - 2.7.3-1
 - Update to 2.7.3
 
